@@ -20,6 +20,7 @@ import '../../../services/notifications/reminder_scheduler.dart';
 import '../../../shared/domain/life_item.dart';
 import '../../../shared/domain/life_item_status.dart';
 import '../../../shared/widgets/category_label.dart';
+import '../../../shared/widgets/notification_rationale.dart';
 import '../../../shared/widgets/recurrence_label.dart';
 import '../../../shared/domain/reminder.dart';
 import '../../../navigation/routes.dart';
@@ -597,6 +598,8 @@ class _AiNote extends ConsumerWidget {
       ),
     );
     if (chosen == null || !context.mounted) return;
+    await explainNotificationsIfNeeded(context, ref);
+    if (!context.mounted) return;
     await _setReminder(context, ref, anchor, chosen);
   }
 

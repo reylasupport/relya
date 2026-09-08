@@ -249,7 +249,6 @@
   },
   "reminderPermissionTitle": "Allow notifications",
   "reminderPermissionMessage": "Without them I cannot remind you of anything.",
-  "calendarPermissionMessage": "I need calendar access only to add this event.",
   "errorGeneric": "Something went wrong.",
   "errorTitleRequired": "Give it a title first.",
   "errorNetwork": "No connection.",

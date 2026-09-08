@@ -10,6 +10,7 @@ class LocalPrefs {
   static const String _shareHintShown = 'share_hint_shown_v1';
   static const String _lastTimezone = 'last_timezone';
   static const String _firstCaptureTracked = 'first_capture_tracked_v1';
+  static const String _notificationsExplained = 'notifications_explained_v1';
 
   final SharedPreferences _prefs;
 
@@ -30,6 +31,19 @@ class LocalPrefs {
 
   Future<void> setFirstCaptureTracked() =>
       _prefs.setBool(_firstCaptureTracked, true);
+
+  /// Whether the system notification prompt has already been triggered.
+  ///
+  /// iOS shows that prompt once per install and never again, so it must not be
+  /// spent on a dialog the user has no reason to accept. Set only after the
+  /// person has said yes to our own explanation - "Not now" leaves this false,
+  /// because nothing was spent and the question is worth asking again the next
+  /// time a reminder is actually wanted.
+  bool get notificationsExplained =>
+      _prefs.getBool(_notificationsExplained) ?? false;
+
+  Future<void> setNotificationsExplained() =>
+      _prefs.setBool(_notificationsExplained, true);
 
   /// Used to notice that the user has travelled, so reminders anchored to a
   /// local wall-clock time can be recomputed.

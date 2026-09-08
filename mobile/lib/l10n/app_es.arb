@@ -143,7 +143,6 @@
   "reminderAdded": "Añadido. Te aviso {when}.",
   "reminderPermissionTitle": "Permitir notificaciones",
   "reminderPermissionMessage": "Sin ellas no puedo recordarte nada.",
-  "calendarPermissionMessage": "Necesito acceso al calendario solo para añadir este evento.",
   "errorGeneric": "Algo ha salido mal.",
   "errorTitleRequired": "Ponle antes un título.",
   "errorNetwork": "Sin conexión.",

@@ -13,6 +13,7 @@ import '../../../core/formatting/app_date_format.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../navigation/routes.dart';
 import '../../../shared/data/providers.dart';
+import '../../../shared/widgets/notification_rationale.dart';
 import '../application/analysis_controller.dart';
 import 'widgets/extraction_card.dart';
 
@@ -196,6 +197,16 @@ class _SubmitBarState extends ConsumerState<_SubmitBar> {
   }
 
   Future<void> _submit() async {
+    // Asked before the save, and only when a reminder was actually ticked:
+    // the scheduler would otherwise trigger the system prompt from behind a
+    // spinner, with nothing on screen to explain it.
+    if (widget.state.drafts.any(
+      (d) => d.accepted && d.reminderChoices.any((enabled) => enabled),
+    )) {
+      await explainNotificationsIfNeeded(context, ref);
+      if (!mounted) return;
+    }
+
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     final failed = context.l10n.errorGeneric;
