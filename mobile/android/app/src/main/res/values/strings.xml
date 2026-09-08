@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The launcher label. Rebranding changes this file and Brand.appName,
+     nothing else. -->
+<resources>
+    <string name="app_name">Relya</string>
+</resources>

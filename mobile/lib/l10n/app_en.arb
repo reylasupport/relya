@@ -1,0 +1,543 @@
+{
+  "@@locale": "en",
+  "actionCancel": "Cancel",
+  "actionSave": "Save",
+  "actionDone": "Done",
+  "actionEdit": "Edit",
+  "actionDelete": "Delete",
+  "actionRetry": "Try again",
+  "actionClose": "Close",
+  "actionSeeAll": "See all",
+  "actionAdd": "Add",
+  "actionAddAll": "Add all",
+  "actionSkip": "Skip",
+  "actionNext": "Next",
+  "actionNotNow": "Not now",
+  "actionContinue": "Continue",
+  "greetingMorning": "Good morning{name}",
+  "@greetingMorning": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": ", Joao"
+      }
+    }
+  },
+  "greetingAfternoon": "Good afternoon{name}",
+  "@greetingAfternoon": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "greetingEvening": "Good evening{name}",
+  "@greetingEvening": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "navHome": "Home",
+  "navInbox": "Inbox",
+  "navUpcoming": "Upcoming",
+  "navLife": "Life",
+  "navAssistant": "Assistant",
+  "bucketOverdue": "Overdue",
+  "bucketToday": "Today",
+  "bucketTomorrow": "Tomorrow",
+  "bucketThisWeek": "This week",
+  "bucketNext30Days": "Next 30 days",
+  "bucketLater": "Later",
+  "bucketUndated": "No date",
+  "daysLeft": "{count, plural, =0{Last day} =1{1 day left} other{{count} days left}}",
+  "@daysLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "inDays": "{count, plural, =0{today} =1{in 1 day} other{in {count} days}}",
+  "@inDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueByDays": "{count, plural, =1{1 day overdue} other{{count} days overdue}}",
+  "@overdueByDays": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeAskPlaceholder": "Ask anything about your life",
+  "homeEmptyTitle": "Nothing to keep track of yet",
+  "homeEmptyMessage": "Share a screenshot, a receipt or a document and I will take care of the important parts.",
+  "inboxTitle": "Inbox",
+  "inboxEmptyTitle": "Nothing waiting for you",
+  "inboxEmptyMessage": "Share a screenshot, receipt or document and I will take care of the important bits.",
+  "inboxTryExample": "Try an example",
+  "inboxStatusQueued": "Waiting",
+  "inboxStatusProcessing": "Reading",
+  "inboxStatusCompleted": "Done",
+  "inboxStatusFailed": "Could not read this",
+  "foundNThings": "{count, plural, =0{Nothing important found} =1{Found 1 important thing} other{Found {count} important things}}",
+  "@foundNThings": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "captureTitle": "Add something",
+  "captureScanDocument": "Scan document",
+  "captureFromLibrary": "Choose photo",
+  "captureUploadFile": "Upload PDF or file",
+  "capturePasteText": "Paste text",
+  "captureManual": "Add manually",
+  "capturePasteHint": "Message, email or note",
+  "captureQuotaReachedTitle": "You have used this month allowance",
+  "captureQuotaReachedMessage": "Upgrade for unlimited captures, or wait until {date}.",
+  "@captureQuotaReachedMessage": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "analysisStageReading": "Reading",
+  "analysisStageUnderstanding": "Understanding",
+  "analysisStageDates": "Finding important dates",
+  "analysisNothingFound": "I could not find anything important here",
+  "analysisNothingFoundMessage": "You can still save it as a note, or add the details yourself.",
+  "analysisConfirmCheck": "Please check",
+  "analysisConfirmUnsure": "Not sure",
+  "analysisLowConfidence": "I could not fully understand this. Please check before saving.",
+  "analysisAmbiguousDate": "Which date do you mean?",
+  "analysisAddSelected": "{count, plural, =1{Add 1 item} other{Add {count} items}}",
+  "@analysisAddSelected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "analysisGotThisWrong": "This is wrong",
+  "analysisSavedConfirmation": "Added. I will remind you.",
+  "upcomingTitle": "Upcoming",
+  "upcomingEmptyTitle": "Nothing coming up",
+  "upcomingEmptyMessage": "When you add something with a date, it shows up here.",
+  "lifeTitle": "Life",
+  "lifeEmptyTitle": "Your things live here",
+  "lifeEmptyMessage": "Car, home, documents, purchases. They appear as you add them.",
+  "lifeItemsCount": "{count, plural, =0{Nothing yet} =1{1 item} other{{count} items}}",
+  "@lifeItemsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "assistantTitle": "Assistant",
+  "assistantPlaceholder": "Ask about your life",
+  "assistantEmptyTitle": "Ask me anything about your life",
+  "assistantEmptyMessage": "I only look at what you have saved here. I never make things up.",
+  "assistantSuggestion1": "Anything important this week?",
+  "assistantSuggestion2": "What do I have to pay this month?",
+  "assistantSuggestion3": "Can I still return anything?",
+  "assistantNoData": "I could not find anything about that in your items.",
+  "assistantLimitReached": "That is all I can answer today. Try again tomorrow, or subscribe for unlimited questions.",
+  "searchTitle": "Search",
+  "searchPlaceholder": "Search everything",
+  "searchEmptyTitle": "Search your whole life",
+  "searchEmptyMessage": "Documents, purchases, appointments, subscriptions.",
+  "searchNoResults": "Nothing matched {query}.",
+  "@searchNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsTitle": "Settings",
+  "settingsLanguage": "Language",
+  "settingsLanguageSystem": "System language",
+  "settingsNotifications": "Notifications",
+  "settingsAppearance": "Appearance",
+  "settingsThemeSystem": "System",
+  "settingsThemeLight": "Light",
+  "settingsThemeDark": "Dark",
+  "settingsPrivacy": "Privacy",
+  "settingsAbout": "About",
+  "settingsSignOut": "Sign out",
+  "settingsNotificationsEnabled": "Allow notifications",
+  "settingsQuietHours": "Quiet hours",
+  "settingsMutedCategories": "Muted categories",
+  "settingsKeepOriginals": "Keep original files",
+  "settingsKeepOriginalsHint": "Turn off to store only what was extracted.",
+  "settingsBiometricLock": "Lock documents",
+  "settingsAnalytics": "Share anonymous usage data",
+  "settingsExportData": "Export my data",
+  "settingsDeleteAccount": "Delete account",
+  "settingsDeleteAccountWarning": "This deletes your items, your files and your account. It cannot be undone.",
+  "settingsDeleteAccountConfirm": "Delete everything",
+  "authTitle": "Create your account",
+  "authSubtitle": "So your things follow you to every device.",
+  "authContinueWithApple": "Continue with Apple",
+  "authContinueWithGoogle": "Continue with Google",
+  "authEmailHint": "you@example.com",
+  "authCheckEmailMessage": "I sent a sign-in link to {email}.",
+  "@authCheckEmailMessage": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "authLegal": "By continuing you accept the Terms and the Privacy Policy.",
+  "authTerms": "Terms",
+  "authPrivacy": "Privacy Policy",
+  "onboardingTitle3": "I remember what matters",
+  "onboardingBody3": "Dates, deadlines, payments. You just confirm.",
+  "onboardingGetStarted": "Get started",
+  "paywallTitle": "Never miss anything important",
+  "paywallSubtitle": "Unlimited captures, the assistant, documents and warranties.",
+  "paywallMonthly": "Monthly",
+  "paywallAnnual": "Annual",
+  "paywallBestValue": "Best value",
+  "paywallPerMonth": "{price} / month",
+  "@paywallPerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "paywallPerYear": "{price} / year",
+  "@paywallPerYear": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "paywallSubscribe": "Subscribe",
+  "paywallRestore": "Restore purchases",
+  "paywallFeatureUnlimited": "Unlimited smart captures",
+  "paywallFeatureAssistant": "Ask anything about your life",
+  "paywallFeatureDocuments": "Documents, purchases and warranties",
+  "paywallFeatureReminders": "Advanced reminders",
+  "paywallFeatureSearch": "Smart search",
+  "reminderAddToCalendar": "Add to calendar",
+  "reminder1DayBefore": "1 day before",
+  "reminder2HoursBefore": "2 hours before",
+  "reminder7DaysBefore": "7 days before",
+  "reminder30DaysBefore": "30 days before",
+  "reminderOnTheDay": "On the day",
+  "reminderAdded": "Added. I will remind you {when}.",
+  "@reminderAdded": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "reminderPermissionTitle": "Allow notifications",
+  "reminderPermissionMessage": "Without them I cannot remind you of anything.",
+  "calendarPermissionMessage": "I need calendar access only to add this event.",
+  "errorGeneric": "Something went wrong.",
+  "errorTitleRequired": "Give it a title first.",
+  "errorNetwork": "No connection.",
+  "errorOffline": "You are offline. I will analyse this when you are back.",
+  "errorExtraction": "I could not read this one.",
+  "errorQuota": "You have used all your captures this month.",
+  "appearanceMode": "Mode",
+  "accountTitle": "Account",
+  "accountPlanFree": "Free plan",
+  "accountPlanPro": "Pro",
+  "accountCapturesLeft": "{count, plural, =0{No captures left this month} =1{1 capture left this month} other{{count} captures left this month}}",
+  "@accountCapturesLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accountUpgrade": "Upgrade",
+  "accountManageSubscription": "Manage subscription",
+  "accountSectionPreferences": "Preferences",
+  "accountSectionData": "Your data",
+  "accountSectionAbout": "About",
+  "authModeSignUp": "Create account",
+  "authModeSignIn": "Sign in",
+  "authTitleSignIn": "Welcome back",
+  "authSubtitleSignIn": "Everything is where you left it.",
+  "authPasswordHint": "Password",
+  "authPasswordTooShort": "Use at least 8 characters",
+  "authEmailInvalid": "That email does not look right",
+  "authForgotPassword": "Forgot your password?",
+  "authResetSent": "I sent a reset link to {email}.",
+  "@authResetSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "authOrUseLink": "Send me a sign-in link instead",
+  "authOrEmail": "or",
+  "upcomingCalendar": "Calendar",
+  "upcomingList": "List",
+  "upcomingJumpToToday": "Today",
+  "upcomingNothingOnDay": "Nothing on this day",
+  "upcomingNothingOnDayHint": "Pick another day, or add something.",
+  "upcomingPreviousMonth": "Previous month",
+  "upcomingNextMonth": "Next month",
+  "onboardingDemoMessage": "Hi Joao, your dentist appointment is confirmed for 17 September at 15:30 at Clinica Central. The 49,99 EUR payment is due on 20 September.",
+  "onboardingDemoItem1": "Dentist appointment",
+  "onboardingDemoItem1Meta": "17 Sep, 15:30 · Clinica Central",
+  "onboardingDemoItem2": "Payment due",
+  "onboardingDemoItem2Meta": "20 Sep · 49,99 EUR",
+  "onboardingDemoItem3": "Reminder set",
+  "onboardingDemoItem3Meta": "The day before, at 18:00",
+  "onboardingHowTitle": "Three ways to add something",
+  "onboardingHowShare": "Share it",
+  "onboardingHowShareBody": "In any app, tap Share and pick {appName}. This is the one that changes everything.",
+  "@onboardingHowShareBody": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "onboardingHowPhoto": "Photograph it",
+  "onboardingHowPhotoBody": "Point the camera at a receipt, a letter or a card.",
+  "onboardingHowPaste": "Paste it",
+  "onboardingHowPasteBody": "Drop in a message, an email, anything with a date.",
+  "settingsOn": "On",
+  "settingsOff": "Off",
+  "accountContactSupport": "Contact support",
+  "itemWhen": "When",
+  "itemDeadline": "Deadline",
+  "itemAmount": "Amount",
+  "itemWhere": "Where",
+  "itemReminders": "Reminders",
+  "categoryAppointment": "Appointment",
+  "categoryBill": "Bill",
+  "categorySubscription": "Subscription",
+  "categoryPurchase": "Purchase",
+  "categoryReturn": "Return",
+  "categoryWarranty": "Warranty",
+  "categoryTravel": "Travel",
+  "categoryDocument": "Document",
+  "categoryInsurance": "Insurance",
+  "categoryVehicle": "Vehicle",
+  "categoryHome": "Home",
+  "categoryEvent": "Event",
+  "categoryDelivery": "Delivery",
+  "categoryReservation": "Reservation",
+  "categoryEducation": "Education",
+  "categoryTask": "Task",
+  "categoryOther": "Other",
+  "appearanceSkin": "Theme",
+  "skinSoft": "Soft",
+  "skinSoftBody": "Warm paper and deep indigo. Calm and neutral.",
+  "skinPastel": "Pastel",
+  "skinPastelBody": "Light, friendly, gently colour-coded.",
+  "skinCosy": "Cosy",
+  "skinCosyBody": "Warm dark with a sage accent. Easy at night.",
+  "skinMidnight": "Midnight",
+  "skinMidnightBody": "Deep navy and electric violet. High contrast.",
+  "homePosterLabel": "FEATURED",
+  "homePosterTitle": "You have {count} important things this week",
+  "@homePosterTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homePosterTitleCalm": "Your week is clear",
+  "homePosterSubtitle": "{count} due soon",
+  "@homePosterSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homePosterSubtitleCalm": "Nothing due in the next seven days",
+  "actionSeeDetails": "See details",
+  "statDone": "Done",
+  "homeGreetingSubtitle": "Here's what matters today.",
+  "homeSeeAllUpcoming": "See all upcoming ({count})",
+  "@homeSeeAllUpcoming": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "itemAllDay": "All day",
+  "upcomingAgenda": "Agenda",
+  "welcomeTitleSoft": "Welcome to Relya",
+  "welcomeBodySoft": "Your personal assistant for what actually matters.",
+  "welcomeTitleCalm": "Your life, organised calmly.",
+  "welcomeTitleLight": "Your life, organised lightly",
+  "welcomeBodyLight": "Relya helps you remember what matters, every day.",
+  "welcomeTaglineAi": "Your AI life assistant.",
+  "welcomeFeature1Title": "Reminders that never slip",
+  "welcomeFeature1Body": "Relya keeps you ahead of everything.",
+  "welcomeFeature2Title": "Organised, effortlessly",
+  "welcomeFeature2Body": "Tasks, events and documents in one place.",
+  "welcomeFeature3Title": "A smart assistant",
+  "welcomeFeature3Body": "Ask Relya and get a useful answer.",
+  "homeNext": "Up next",
+  "inboxFilterAll": "All",
+  "inboxFilterPending": "To handle",
+  "inboxFilterDone": "Done",
+  "bucketYesterday": "Yesterday",
+  "assistantSubtitle": "Your personal helper 💜",
+  "greetingHi": "Hi, {name}",
+  "assistantForYou": "Suggested for you",
+  "assistantInsight1": "You have 2 payments this week",
+  "assistantInsight2": "A trip in 12 days",
+  "@greetingHi": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "captureManualHint": "Task, reminder or note",
+  "captureScanHint": "PDF or image",
+  "captureLibraryHint": "Images or screenshots",
+  "captureFileHint": "PDF, CSV or other",
+  "captureSheetTitle": "Add from anywhere",
+  "captureSheetSubtitle": "Relya turns it into something organised.",
+  "captureManualSection": "Add manually",
+  "lifeSubtitle": "Everything that matters, in one place.",
+  "authNoAccount": "No account yet?",
+  "authHaveAccount": "Already have an account?",
+  "captureQueuedOffline": "Saved. It will be analysed as soon as you are back online.",
+  "outboxWaiting": "{count,plural, =1{1 capture waiting for a connection}other{{count} captures waiting for a connection}}",
+  "@outboxWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "itemDetailTitle": "Item",
+  "actionMore": "More",
+  "itemMarkDone": "Mark as done",
+  "itemIsDone": "Done",
+  "itemAiNoteTitle": "Relya AI",
+  "itemAiNoteBody": "I can remind you the day before, so this does not arrive as a surprise.",
+  "itemSetReminder": "Set reminder",
+  "authConfirmTitle": "Check your email",
+  "authConfirmBody": "We sent a six-digit code to {email}. Enter it to finish.",
+  "authConfirmAction": "Confirm account",
+  "authConfirmResend": "Send the code again",
+  "actionBack": "Back",
+  "@authConfirmBody": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "authEmailNotSent": "Account not created: the confirmation email could not be sent. This is a server setting, not you.",
+  "itemEditTitle": "Edit item",
+  "itemTitleField": "Title",
+  "itemTypeField": "Category",
+  "itemNotes": "Notes",
+  "itemCurrency": "Currency",
+  "itemOrganisation": "Who",
+  "itemClearDate": "Remove this date",
+  "itemSaved": "Saved.",
+  "errorAmount": "That is not a number.",
+  "recurrenceLabel": "Repeats",
+  "recurrenceNever": "Does not repeat",
+  "recurrenceDaily": "Every day",
+  "recurrenceWeekly": "Every week",
+  "recurrenceMonthly": "Every month",
+  "recurrenceYearly": "Every year",
+  "recurrenceNeedsDate": "Something that repeats needs a date to repeat from.",
+  "recurrenceNextOn": "Done. The next one is on {when}.",
+  "@recurrenceNextOn": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "itemSnooze": "Snooze",
+  "itemSnoozeNextWeek": "Next week",
+  "itemSnoozePick": "Pick a moment",
+  "itemSnoozedUntil": "Snoozed until {when}",
+  "@itemSnoozedUntil": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "itemResume": "Bring it back",
+  "itemSnoozeNudge": "Back on your list",
+  "quickAddTitle": "Subscription or bill",
+  "quickAddHint": "Netflix, rent, car insurance…",
+  "quickAddCommon": "Common",
+  "quickAddServices": "Services",
+  "quickAddNextDue": "Next one",
+  "quickAddAdded": "{name} added.",
+  "@quickAddAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "quickAddAction": "Something I already pay for",
+  "quickAddActionHint": "A subscription, a bill, an insurance policy",
+  "quickAddRent": "Rent",
+  "quickAddCondominium": "Building fees",
+  "quickAddCouncilTax": "Property tax",
+  "quickAddElectricity": "Electricity",
+  "quickAddWater": "Water",
+  "quickAddGas": "Gas",
+  "quickAddInternet": "Internet",
+  "quickAddMobile": "Mobile phone",
+  "quickAddGym": "Gym",
+  "quickAddCarInsurance": "Car insurance",
+  "quickAddHomeInsurance": "Home insurance",
+  "quickAddHealthInsurance": "Health insurance",
+  "quickAddLifeInsurance": "Life insurance",
+  "quickAddCarInspection": "Vehicle inspection",
+  "quickAddRoadTax": "Road tax",
+  "quickAddPassport": "Passport",
+  "quickAddIdCard": "ID card",
+  "quickAddDriversLicence": "Driving licence",
+  "quickAddDentist": "Dentist",
+  "quickAddMedicalCheckup": "Check-up",
+  "settingsEmailInbox": "Forward email",
+  "emailInboxIntro": "Most of this arrives in your inbox. Forward it to your own address and it turns up here, read and waiting for you to confirm.",
+  "emailInboxUnavailable": "Not available on this build yet.",
+  "emailInboxCopy": "Copy address",
+  "emailInboxCopied": "Address copied.",
+  "emailInboxOnlyYou": "Only mail sent from {email} is accepted. Anything else is dropped.",
+  "emailInboxNoScanning": "I never read your inbox. Nothing is connected, so there is nothing to revoke.",
+  "emailInboxStillConfirm": "A forwarded email becomes a suggestion, never a saved item. You still confirm it.",
+  "@emailInboxOnlyYou": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  }
+}

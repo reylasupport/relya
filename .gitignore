@@ -1,0 +1,34 @@
+# Repository root. Per-package rules live in mobile/.gitignore.
+
+# --- IDE ---------------------------------------------------------------------
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+.DS_Store
+
+# --- Build systems -----------------------------------------------------------
+.gradle/
+build/
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# --- Server secrets ----------------------------------------------------------
+# Created from .env.example. Holds model keys and the Supabase service-role
+# key. Never committed.
+.env
+!.env.example
+
+# --- Supabase CLI ------------------------------------------------------------
+# Machine-local state: which project this checkout is linked to and which CLI
+# version last ran. Not part of the schema.
+supabase/.temp/
+
+# --- Scratch -----------------------------------------------------------------
+# 61 MB of Android Studio wizard output kept for reference only. Nothing in the
+# app imports it; delete the directory when it stops being useful.
+_archive/
+node_modules/

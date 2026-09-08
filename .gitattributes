@@ -1,0 +1,14 @@
+# One line ending everywhere, decided here rather than by whoever cloned last.
+#
+# The CI formatting gate runs on Linux and compares byte for byte. Without
+# this, a file written on Windows arrives with CRLF, `dart format` rewrites it
+# to LF, and the check fails on a change nobody made.
+* text=auto eol=lf
+
+# Binary, never touched.
+*.png binary
+*.jpg binary
+*.ttf binary
+*.otf binary
+*.jks binary
+*.keystore binary

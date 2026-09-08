@@ -1,0 +1,24 @@
+{
+  "FLAVOR": "dev",
+  "USE_MOCK_DATA": true,
+
+  "APP_NAME": "Relya",
+  "APP_TAGLINE": "Send anything. I remember.",
+  "SUPPORT_EMAIL": "support@relya.app",
+  "WEBSITE_URL": "https://relya.app",
+  "PRIVACY_URL": "https://relya.app/privacy",
+  "TERMS_URL": "https://relya.app/terms",
+  "URL_SCHEME": "relya",
+  "EMAIL_INBOX_DOMAIN": "",
+
+  "SUPABASE_URL": "",
+  "SUPABASE_PUBLISHABLE_KEY": "",
+
+  "REVENUECAT_IOS_KEY": "",
+  "REVENUECAT_ANDROID_KEY": "",
+
+  "POSTHOG_API_KEY": "",
+  "POSTHOG_HOST": "https://eu.i.posthog.com",
+
+  "SENTRY_DSN": ""
+}

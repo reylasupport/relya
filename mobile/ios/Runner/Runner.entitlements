@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Required by sign_in_with_apple. Without this the native button
+	     returns error 1000 and, because the app also offers Google, App
+	     Review rejects the build. -->
+	<key>com.apple.developer.applesignin</key>
+	<array>
+		<string>Default</string>
+	</array>
+	<!-- Shared with the Share Extension: the extension writes the incoming
+	     file into this container and the app reads it from there. Must match
+	     CUSTOM_GROUP_ID in the build settings of both targets, and the group
+	     has to exist in the Apple Developer portal. -->
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.relya.app</string>
+	</array>
+</dict>
+</plist>
