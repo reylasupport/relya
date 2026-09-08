@@ -295,7 +295,14 @@ export async function sha256(value: string): Promise<string> {
 }
 
 export async function sha256Bytes(bytes: Uint8Array): Promise<string> {
-  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  // Re-wrapped before hashing. A bare Uint8Array now admits a view sitting on
+  // a SharedArrayBuffer, which digest() refuses to take, and the TypeScript
+  // that ships with Deno 2.2 started enforcing it. Everything that reaches
+  // here was built with new Uint8Array over its own buffer, so the copy costs
+  // one pass and restores the guarantee the type stopped carrying. Written
+  // this way rather than as Uint8Array<ArrayBuffer>, which would only compile
+  // on TypeScript 5.7 and later.
+  const digest = await crypto.subtle.digest("SHA-256", new Uint8Array(bytes));
   return [...new Uint8Array(digest)]
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");

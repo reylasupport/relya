@@ -75,7 +75,14 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/demo/
+    # assets/demo/ was declared here and was always empty: the demo data is
+    # code in shared/data/mock and the artwork is painted, not loaded. Git
+    # does not carry an empty directory, so a clean checkout had no such path
+    # and analyze --fatal-infos failed on a warning that never appeared on a
+    # machine where the stray folder happened to exist.
+    #
+    # Only the launcher-icon sources are real, and they are read by
+    # flutter_launcher_icons at build time rather than through the bundle.
     - assets/brand/
 
   # The editorial serif of Concept F. Merriweather, SIL Open Font License 1.1;
