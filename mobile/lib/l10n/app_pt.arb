@@ -50,6 +50,7 @@
   "captureUploadFile": "Carregar PDF ou ficheiro",
   "capturePasteText": "Colar texto",
   "captureManual": "Adicionar manualmente",
+  "manualMoreDetails": "Mais detalhes",
   "capturePasteHint": "Mensagem, email ou nota",
   "captureQuotaReachedTitle": "Já usaste a tua quota deste mês",
   "captureQuotaReachedMessage": "Subscreve para capturas ilimitadas, ou espera até {date}.",

@@ -12,6 +12,7 @@ import '../../../shared/domain/life_item.dart';
 import '../../../shared/domain/life_item_status.dart';
 import '../../../shared/domain/life_item_type.dart';
 import '../../../shared/widgets/category_label.dart';
+import '../../../shared/widgets/place_field.dart';
 
 /// The escape hatch. Rarely the main path, but an assistant that cannot be
 /// told something directly is not an assistant.
@@ -24,9 +25,24 @@ class ManualEntryScreen extends ConsumerStatefulWidget {
 
 class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
   final _title = TextEditingController();
+  final _notes = TextEditingController();
+  final _amount = TextEditingController();
+  final _currency = TextEditingController();
+  final _location = TextEditingController();
+  final _organization = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   LifeItemType _type = LifeItemType.task;
+
+  /// Everything past the title, the kind and the date starts folded away.
+  ///
+  /// The edit screen has always offered the amount, the place and who it was
+  /// with; this screen offered none of them, so adding something by hand and
+  /// then giving it a price meant saving it and opening it again. The fields
+  /// are the same fields now. What is different is that only the title is
+  /// required - the rest is there when it is wanted and out of the way when
+  /// it is not.
+  bool _showMore = false;
 
   /// Today, not null. The button under the form has always read "Today", and
   /// an item saved with no date at all is dropped by every list on the way
@@ -43,7 +59,22 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
   @override
   void dispose() {
     _title.dispose();
+    _notes.dispose();
+    _amount.dispose();
+    _currency.dispose();
+    _location.dispose();
+    _organization.dispose();
     super.dispose();
+  }
+
+  num? _parseAmount() {
+    final raw = _amount.text.trim().replaceAll(',', '.');
+    return raw.isEmpty ? null : num.tryParse(raw);
+  }
+
+  String? _trimmed(TextEditingController controller) {
+    final value = controller.text.trim();
+    return value.isEmpty ? null : value;
   }
 
   Future<void> _pickDate() async {
@@ -86,9 +117,17 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
               id: newId(),
               type: _type,
               title: _title.text.trim(),
+              description: _trimmed(_notes),
               status: LifeItemStatus.active,
               startAt: _when.toUtc(),
               startTimezone: DateTime.now().timeZoneName,
+              amount: _parseAmount(),
+              currency: _trimmed(_currency)?.toUpperCase(),
+              location: _trimmed(_location),
+              organization: _trimmed(_organization),
+              // Typed by a person, not read by a model. Nothing downstream
+              // should ever ask them to check it.
+              confidence: 1,
               createdAt: now,
             ),
           );
@@ -117,7 +156,7 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
               controller: _title,
               autofocus: true,
               textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(hintText: 'Title'),
+              decoration: InputDecoration(labelText: l10n.itemTitleField),
               // An empty string here failed the form with no visible reason,
               // so Save looked broken rather than refused.
               validator: (value) => (value == null || value.trim().isEmpty)
@@ -149,6 +188,77 @@ class _ManualEntryScreenState extends ConsumerState<ManualEntryScreen> {
               icon: const Icon(Icons.schedule_rounded, size: 18),
               label: Text(AppDateFormat.dateAndTime(_when, context.localeTag)),
             ),
+            const SizedBox(height: AppSpacing.lg),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: TextButton.icon(
+                onPressed: () => setState(() => _showMore = !_showMore),
+                icon: Icon(
+                  _showMore
+                      ? Icons.expand_less_rounded
+                      : Icons.expand_more_rounded,
+                  size: 20,
+                ),
+                label: Text(l10n.manualMoreDetails),
+              ),
+            ),
+            if (_showMore) ...[
+              const SizedBox(height: AppSpacing.sm),
+              TextFormField(
+                controller: _notes,
+                minLines: 2,
+                maxLines: 4,
+                textCapitalization: TextCapitalization.sentences,
+                decoration: InputDecoration(labelText: l10n.itemNotes),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: TextFormField(
+                      controller: _amount,
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      decoration: InputDecoration(labelText: l10n.itemAmount),
+                      validator: (value) {
+                        final raw = (value ?? '').trim().replaceAll(',', '.');
+                        if (raw.isEmpty) return null;
+                        return num.tryParse(raw) == null
+                            ? l10n.errorAmount
+                            : null;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _currency,
+                      textCapitalization: TextCapitalization.characters,
+                      maxLength: 3,
+                      decoration: InputDecoration(
+                        labelText: l10n.itemCurrency,
+                        counterText: '',
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              PlaceField(
+                controller: _location,
+                label: l10n.itemWhere,
+                icon: Icons.place_outlined,
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              PlaceField(
+                controller: _organization,
+                label: l10n.itemOrganisation,
+                icon: Icons.storefront_outlined,
+              ),
+            ],
             const SizedBox(height: AppSpacing.xl),
             FilledButton(
               onPressed: _busy ? null : _save,

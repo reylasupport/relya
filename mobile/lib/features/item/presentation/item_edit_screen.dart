@@ -14,6 +14,7 @@ import '../../../shared/domain/life_item_type.dart';
 import '../../../shared/domain/recurrence.dart';
 import '../../../shared/widgets/recurrence_label.dart';
 import '../../../shared/widgets/category_label.dart';
+import '../../../shared/widgets/place_field.dart';
 import '../application/item_actions.dart';
 
 final _editableProvider = FutureProvider.autoDispose.family(
@@ -330,16 +331,18 @@ class _FormState extends ConsumerState<_Form> {
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
-          TextFormField(
+          // Same field as the manual entry screen, so a place typed once is
+          // offered the next time wherever it is asked for.
+          PlaceField(
             controller: _location,
-            textCapitalization: TextCapitalization.sentences,
-            decoration: InputDecoration(labelText: l10n.itemWhere),
+            label: l10n.itemWhere,
+            icon: Icons.place_outlined,
           ),
           const SizedBox(height: AppSpacing.lg),
-          TextFormField(
+          PlaceField(
             controller: _organization,
-            textCapitalization: TextCapitalization.sentences,
-            decoration: InputDecoration(labelText: l10n.itemOrganisation),
+            label: l10n.itemOrganisation,
+            icon: Icons.storefront_outlined,
           ),
           const SizedBox(height: AppSpacing.xxl),
           FilledButton(
