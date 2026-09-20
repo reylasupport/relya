@@ -6,6 +6,7 @@ import '../../extensions/context_extensions.dart';
 import '../illustrations/pastel_scene.dart';
 import 'concept_kit.dart';
 import 'kit_common.dart';
+import '../tokens/app_semantic_colors.dart';
 
 /// Concept E: friendly pastel.
 ///
@@ -154,7 +155,7 @@ class KitE extends ConceptKit {
               child: Text(
                 '$count',
                 style: context.text.labelSmall?.copyWith(
-                  color: context.colors.primary,
+                  color: context.semantic.accentText,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -197,7 +198,7 @@ class KitE extends ConceptKit {
         onTap: onTap,
         customBorder: const StadiumBorder(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 11),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -209,7 +210,7 @@ class KitE extends ConceptKit {
                 child: Text(
                   label,
                   style: context.text.labelMedium?.copyWith(
-                    color: context.colors.primary,
+                    color: context.semantic.accentText,
                     fontWeight: FontWeight.w600,
                   ),
                   overflow: TextOverflow.ellipsis,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/extensions/context_extensions.dart';
 import '../domain/user_profile.dart';
+import '../../core/design/tokens/app_semantic_colors.dart';
 
 /// Initials in a circle. No photo upload in V1: one more thing to store, one
 /// more piece of personal data to protect, for no functional gain.
@@ -33,6 +34,9 @@ class ProfileAvatar extends StatelessWidget {
     return '${parts.first[0]}${parts.last[0]}'.toUpperCase();
   }
 
+  /// Android asks for 48; iOS for 44. The larger one is the one to meet.
+  static const double _minTapTarget = 48;
+
   @override
   Widget build(BuildContext context) {
     final colors = context.colors;
@@ -51,7 +55,7 @@ class ProfileAvatar extends StatelessWidget {
         style: TextStyle(
           fontSize: size * 0.38,
           fontWeight: FontWeight.w700,
-          color: colors.primary,
+          color: context.semantic.accentText,
           letterSpacing: 0.2,
         ),
       ),
@@ -62,10 +66,17 @@ class ProfileAvatar extends StatelessWidget {
     return Semantics(
       label: semanticLabel,
       button: true,
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: circle,
+      // The circle is 36 across, which is a deliberate size for a header and
+      // a bad size for a thumb. The drawing stays; the thing you hit does not
+      // have to be the same shape as the thing you see.
+      child: SizedBox(
+        width: size < _minTapTarget ? _minTapTarget : size,
+        height: size < _minTapTarget ? _minTapTarget : size,
+        child: InkWell(
+          onTap: onTap,
+          customBorder: const CircleBorder(),
+          child: Center(child: circle),
+        ),
       ),
     );
   }

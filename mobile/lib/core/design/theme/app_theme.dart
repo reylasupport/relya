@@ -47,7 +47,9 @@ abstract final class AppTheme {
 
     final semantic =
         (isLight ? AppSemanticColors.light : AppSemanticColors.dark).copyWith(
+          accentText: p.accentText,
           subtleBorder: p.border,
+          strongBorder: p.borderStrong,
           elevatedSurface: p.surfaceContainer,
         );
 
@@ -101,14 +103,16 @@ abstract final class AppTheme {
         style: OutlinedButton.styleFrom(
           minimumSize: const Size.fromHeight(52),
           textStyle: text.labelLarge,
-          side: BorderSide(color: p.border),
+          // The only thing that says a button is here.
+          side: BorderSide(color: p.borderStrong),
           shape: RoundedRectangleBorder(borderRadius: style.control),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           textStyle: text.labelLarge,
-          minimumSize: const Size(48, 44),
+          foregroundColor: p.accentText,
+          minimumSize: const Size(48, 48),
         ),
       ),
       // The toggle is one of the loudest controls in the app, so it takes
@@ -117,16 +121,24 @@ abstract final class AppTheme {
       segmentedButtonTheme: SegmentedButtonThemeData(
         style: SegmentedButton.styleFrom(
           textStyle: text.labelLarge,
+          foregroundColor: p.accentText,
+          // A filter you switch with your thumb, not a label you read.
+          minimumSize: const Size(48, 48),
           selectedBackgroundColor: switch (concept) {
-            Concept.e || Concept.f => p.accent,
+            // White type on the raw accent measured 3.87:1 to 4.35:1 across the
+            // skins. accentText is the same hue already proven against a white
+            // surface, and contrast is symmetric, so it carries white type.
+            Concept.e || Concept.f => isLight ? p.accentText : p.accent,
             _ => p.accent.withValues(alpha: isLight ? 0.14 : 0.24),
           },
           selectedForegroundColor: switch (concept) {
             Concept.e ||
             Concept.f => isLight ? Colors.white : const Color(0xFF17140F),
-            _ => p.accent,
+            _ => p.accentText,
           },
-          side: BorderSide(color: p.border),
+          // Only the selected segment is filled, so this line is the whole of
+          // what shows the others - and the extent of the control itself.
+          side: BorderSide(color: p.borderStrong),
           shape: switch (concept) {
             Concept.e || Concept.f => const StadiumBorder(),
             _ => RoundedRectangleBorder(
@@ -149,7 +161,9 @@ abstract final class AppTheme {
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: style.control,
-          borderSide: BorderSide(color: p.border),
+          // Filled is not enough on its own here: fillColor sits barely a
+          // tenth of a contrast step off the page behind it.
+          borderSide: BorderSide(color: p.borderStrong),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: style.control,

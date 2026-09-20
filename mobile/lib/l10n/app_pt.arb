@@ -81,6 +81,7 @@
   "assistantSuggestion3": "Ainda posso devolver alguma coisa?",
   "assistantNoData": "Não encontrei nada sobre isso nos teus itens.",
   "assistantLimitReached": "É tudo o que consigo responder hoje. Tenta amanhã, ou subscreve para perguntas ilimitadas.",
+  "assistantSend": "Enviar",
   "searchTitle": "Pesquisa",
   "searchPlaceholder": "Pesquisar tudo",
   "searchEmptyTitle": "Pesquisa a tua vida inteira",

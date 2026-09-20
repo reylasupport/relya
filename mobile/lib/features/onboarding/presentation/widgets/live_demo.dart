@@ -146,7 +146,7 @@ class _Reading extends StatelessWidget {
           Text(
             '$label...',
             style: context.text.labelSmall?.copyWith(
-              color: context.colors.primary,
+              color: context.semantic.accentText,
               fontWeight: FontWeight.w700,
             ),
           ),
@@ -175,9 +175,14 @@ class _Result extends StatelessWidget {
     final accent = context.accentFor(type);
     final semantic = context.semantic;
 
+    // The only travelling animation in the app, and it plays on the first
+    // screen a new user sees. Someone who has asked the system to reduce
+    // motion still gets the fade; they just do not get the movement.
+    final stillness = MediaQuery.disableAnimationsOf(context);
+
     return AnimatedSlide(
-      offset: visible ? Offset.zero : const Offset(0, 0.25),
-      duration: AppDurations.normal,
+      offset: visible || stillness ? Offset.zero : const Offset(0, 0.25),
+      duration: stillness ? Duration.zero : AppDurations.normal,
       curve: AppDurations.emphasised,
       child: AnimatedOpacity(
         opacity: visible ? 1 : 0,

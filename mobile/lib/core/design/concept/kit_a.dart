@@ -236,7 +236,7 @@ class KitA extends ConceptKit {
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: context.colors.outlineVariant),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

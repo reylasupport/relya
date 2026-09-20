@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/design/concept/concept_kit.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../application/inbox_controller.dart';
+import '../../../../core/design/tokens/app_semantic_colors.dart';
 
 /// All / To handle / Done.
 ///
@@ -50,7 +51,7 @@ class InboxFilters extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: context.colors.surfaceContainer,
                 borderRadius: BorderRadius.circular(11),
-                border: Border.all(color: context.colors.outlineVariant),
+                border: Border.all(color: context.semantic.strongBorder),
               ),
               child: Row(
                 children: [for (final c in children) Expanded(child: c)],
@@ -90,7 +91,7 @@ class _Segment extends StatelessWidget {
   Widget build(BuildContext context) {
     final shape = BorderRadius.circular(fused ? 9 : 999);
     final fg = selected
-        ? (fused ? Colors.white : context.colors.primary)
+        ? (fused ? Colors.white : context.semantic.accentText)
         : context.colors.onSurfaceVariant;
 
     return Material(
@@ -108,11 +109,11 @@ class _Segment extends StatelessWidget {
               ? null
               : BoxDecoration(
                   borderRadius: shape,
-                  border: Border.all(color: context.colors.outlineVariant),
+                  border: Border.all(color: context.semantic.strongBorder),
                 ),
           padding: EdgeInsets.symmetric(
             horizontal: fused ? 8 : 15,
-            vertical: 8,
+            vertical: 16,
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,

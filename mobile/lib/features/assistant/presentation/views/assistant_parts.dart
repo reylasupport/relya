@@ -4,6 +4,7 @@ import '../../../../core/design/concept/concept.dart';
 import '../../../../core/design/concept/concept_kit.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import 'robot_mascot.dart';
+import '../../../../core/design/tokens/app_semantic_colors.dart';
 
 /// The title bar of the assistant, in four voices.
 ///
@@ -88,7 +89,10 @@ class AssistantBubble extends StatelessWidget {
 
     final userFill = context.concept == Concept.e
         ? colors.primary.withValues(alpha: context.isDark ? 0.34 : 0.18)
-        : colors.primary;
+        // In the light themes the ink on this is white, and white on the raw
+        // accent does not reach AA. Dark keeps the bright accent, because the
+        // ink there is near-black and has contrast to spare.
+        : (context.isDark ? colors.primary : context.semantic.accentText);
     final userInk = context.concept == Concept.e
         ? colors.onSurface
         : colors.onPrimary;

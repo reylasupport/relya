@@ -152,6 +152,7 @@
   "assistantSuggestion3": "Can I still return anything?",
   "assistantNoData": "I could not find anything about that in your items.",
   "assistantLimitReached": "That is all I can answer today. Try again tomorrow, or subscribe for unlimited questions.",
+  "assistantSend": "Send",
   "searchTitle": "Search",
   "searchPlaceholder": "Search everything",
   "searchEmptyTitle": "Search your whole life",

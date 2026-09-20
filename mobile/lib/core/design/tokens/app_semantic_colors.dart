@@ -17,7 +17,9 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     required this.dangerContainer,
     required this.info,
     required this.infoContainer,
+    required this.accentText,
     required this.subtleBorder,
+    required this.strongBorder,
     required this.elevatedSurface,
   });
 
@@ -32,7 +34,20 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
   final Color dangerContainer;
   final Color info;
   final Color infoContainer;
+
+  /// The accent when it has to be read rather than filled. See
+  /// SkinPalette.accentText.
+  final Color accentText;
+
+  /// Quiet separation. Dividers, and edges that only need to be sensed.
   final Color subtleBorder;
+
+  /// The outline of a control that has nothing else to identify it.
+  /// Cleared for 3:1 against every surface its skin can put behind it;
+  /// see SkinPalette.borderStrong for why one border colour could not do
+  /// both jobs.
+  final Color strongBorder;
+
   final Color elevatedSurface;
 
   static const AppSemanticColors light = AppSemanticColors(
@@ -47,7 +62,9 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     dangerContainer: Color(0xFFFBE9E7),
     info: Color(0xFF3D5AFE),
     infoContainer: Color(0xFFEAEDFF),
+    accentText: Color(0xFF4949AB),
     subtleBorder: Color(0x14000000),
+    strongBorder: Color(0x6D000000),
     elevatedSurface: Color(0xFFFFFFFF),
   );
 
@@ -63,7 +80,9 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     dangerContainer: Color(0xFF3C1F1C),
     info: Color(0xFF93A5FF),
     infoContainer: Color(0xFF212645),
+    accentText: Color(0xFFADABFF),
     subtleBorder: Color(0x1FFFFFFF),
+    strongBorder: Color(0x57FFFFFF),
     elevatedSurface: Color(0xFF1A1C20),
   );
 
@@ -80,7 +99,9 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
     Color? dangerContainer,
     Color? info,
     Color? infoContainer,
+    Color? accentText,
     Color? subtleBorder,
+    Color? strongBorder,
     Color? elevatedSurface,
   }) {
     return AppSemanticColors(
@@ -95,7 +116,9 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       dangerContainer: dangerContainer ?? this.dangerContainer,
       info: info ?? this.info,
       infoContainer: infoContainer ?? this.infoContainer,
+      accentText: accentText ?? this.accentText,
       subtleBorder: subtleBorder ?? this.subtleBorder,
+      strongBorder: strongBorder ?? this.strongBorder,
       elevatedSurface: elevatedSurface ?? this.elevatedSurface,
     );
   }
@@ -116,7 +139,9 @@ class AppSemanticColors extends ThemeExtension<AppSemanticColors> {
       dangerContainer: mix(dangerContainer, other.dangerContainer),
       info: mix(info, other.info),
       infoContainer: mix(infoContainer, other.infoContainer),
+      accentText: mix(accentText, other.accentText),
       subtleBorder: mix(subtleBorder, other.subtleBorder),
+      strongBorder: mix(strongBorder, other.strongBorder),
       elevatedSurface: mix(elevatedSurface, other.elevatedSurface),
     );
   }

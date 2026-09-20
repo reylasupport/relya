@@ -48,9 +48,7 @@ class MonthCalendar extends StatelessWidget {
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.pageInset - 4,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 7,
             childAspectRatio: 0.82,
@@ -89,7 +87,7 @@ class _WeekdayRow extends StatelessWidget {
     final format = DateFormat.E(locale);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.pageInset - 4),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       child: Row(
         children: [
           for (var i = 0; i < 7; i++)
@@ -141,7 +139,7 @@ class _DayCell extends StatelessWidget {
     final foreground = isSelected
         ? colors.onPrimary
         : isToday
-        ? colors.primary
+        ? context.semantic.accentText
         : colors.onSurface;
 
     return Semantics(

@@ -193,7 +193,7 @@ class KitF extends ConceptKit {
         onTap: onTap,
         customBorder: const StadiumBorder(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 16),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [

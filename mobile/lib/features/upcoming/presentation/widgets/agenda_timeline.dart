@@ -12,6 +12,7 @@ import '../../../../navigation/routes.dart';
 import '../../../../navigation/app_shell.dart';
 import '../../../../shared/domain/life_item.dart';
 import '../../application/upcoming_controller.dart';
+import '../../../../core/design/tokens/app_semantic_colors.dart';
 
 /// Everything ahead as one running day-by-day timeline.
 ///
@@ -107,7 +108,7 @@ Widget _timeline(
               style: context.text.labelSmall?.copyWith(
                 letterSpacing: 1.1,
                 color: diff == 0
-                    ? context.colors.primary
+                    ? context.semantic.accentText
                     : context.colors.onSurfaceVariant,
               ),
             ),

@@ -39,10 +39,12 @@ class ItemEditScreen extends ConsumerWidget {
       body: item.when(
         loading: () =>
             const Center(child: CircularProgressIndicator(strokeWidth: 2.4)),
+        // Never the exception itself: a Dart class name is not an error
+        // message, least of all in an app that ships in four languages.
         error: (error, _) => EmptyState(
           icon: Icons.error_outline_rounded,
           title: context.l10n.errorGeneric,
-          message: error.toString(),
+          message: context.l10n.errorNetwork,
         ),
         data: (value) => value == null
             ? EmptyState(

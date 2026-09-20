@@ -224,7 +224,7 @@ class _ModeSwitch extends StatelessWidget {
           child: Text(
             state.isSignUp ? l10n.authModeSignIn : l10n.authModeSignUp,
             style: context.text.labelLarge?.copyWith(
-              color: context.colors.primary,
+              color: context.semantic.accentText,
               fontWeight: FontWeight.w700,
             ),
           ),

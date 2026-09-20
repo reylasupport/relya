@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../shared/domain/life_item.dart';
 import '../../../shared/domain/life_item_type.dart';
 import '../../extensions/context_extensions.dart';
+import '../tokens/app_semantic_colors.dart';
 import '../illustrations/relya_scenes.dart';
 import 'concept_kit.dart';
 import 'kit_common.dart';
@@ -151,11 +152,14 @@ class KitD extends ConceptKit {
               onTap: onSeeAll,
               borderRadius: BorderRadius.circular(8),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 16,
+                ),
                 child: Text(
                   context.l10n.actionSeeAll,
                   style: context.text.labelMedium?.copyWith(
-                    color: context.colors.primary,
+                    color: context.semantic.accentText,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -202,9 +206,9 @@ class KitD extends ConceptKit {
       label: Text(label),
       style: OutlinedButton.styleFrom(
         shape: const StadiumBorder(),
-        side: BorderSide(color: context.colors.outlineVariant),
+        side: BorderSide(color: context.semantic.strongBorder),
         foregroundColor: context.colors.onSurface,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
       ),
     );
   }

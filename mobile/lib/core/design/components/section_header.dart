@@ -4,6 +4,7 @@ import '../../extensions/context_extensions.dart';
 import '../tokens/app_skin.dart';
 import '../tokens/app_skin_style.dart';
 import '../tokens/app_spacing.dart';
+import '../tokens/app_semantic_colors.dart';
 
 /// "Today", "Next 30 days". The label that opens a run of rows.
 ///
@@ -87,12 +88,17 @@ class _SeeAll extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
+      // The label is small on purpose; the thing you hit should not be. Eight
+      // points of vertical padding is what takes a 20dp line to 48.
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.sm,
+          vertical: 16,
+        ),
         child: Text(
           label,
           style: context.text.labelMedium?.copyWith(
-            color: context.colors.primary,
+            color: context.semantic.accentText,
             fontWeight: FontWeight.w600,
           ),
         ),

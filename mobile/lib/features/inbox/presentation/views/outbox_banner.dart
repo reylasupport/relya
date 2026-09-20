@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/design/concept/concept_kit.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../services/outbox/outbox_providers.dart';
+import '../../../../core/design/tokens/app_semantic_colors.dart';
 
 /// "2 waiting for a connection."
 ///
@@ -43,7 +44,7 @@ class OutboxBanner extends ConsumerWidget {
             Text(
               context.l10n.actionRetry,
               style: context.text.labelMedium?.copyWith(
-                color: context.colors.primary,
+                color: context.semantic.accentText,
                 fontWeight: FontWeight.w600,
               ),
             ),

@@ -4,6 +4,7 @@ import '../../../../core/design/concept/concept.dart';
 import '../../../../core/design/concept/concept_kit.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import 'robot_mascot.dart';
+import '../../../../core/design/tokens/app_semantic_colors.dart';
 
 /// What the assistant shows before anyone has asked it anything.
 ///
@@ -157,7 +158,7 @@ class _Insight extends StatelessWidget {
           Text(
             context.l10n.actionSeeDetails,
             style: context.text.labelSmall?.copyWith(
-              color: context.colors.primary,
+              color: context.semantic.accentText,
               fontWeight: FontWeight.w700,
             ),
           ),

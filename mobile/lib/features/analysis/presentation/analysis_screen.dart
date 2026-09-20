@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -124,7 +127,14 @@ class _ReadyView extends ConsumerWidget {
             ),
             child: ExtractionCard(
               draft: state.drafts[i],
-              onToggleAccepted: () => controller.toggleAccepted(i),
+              onToggleAccepted: () {
+                // Accepting or dropping one reading is a decision, and a
+                // decision should be felt. Kept here rather than in the
+                // controller: a StateNotifier has no business on a platform
+                // channel, and a unit test should not need a binding.
+                unawaited(HapticFeedback.selectionClick());
+                controller.toggleAccepted(i);
+              },
               onToggleReminder: (r) => controller.toggleReminder(i, r),
               onToggleAction: (a) => controller.toggleAction(i, a),
               onPickDate: (when) => controller.editDate(i, when),
@@ -207,6 +217,9 @@ class _SubmitBarState extends ConsumerState<_SubmitBar> {
       if (!mounted) return;
     }
 
+    // The one gesture the whole product is built around. A light tap back
+    // is the difference between a form and a thing that answers you.
+    unawaited(HapticFeedback.lightImpact());
     setState(() => _saving = true);
     final messenger = ScaffoldMessenger.of(context);
     final failed = context.l10n.errorGeneric;

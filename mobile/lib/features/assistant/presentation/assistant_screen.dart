@@ -162,6 +162,9 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
                     const SizedBox(width: 8),
                     IconButton.filled(
                       onPressed: _thinking ? null : () => _send(),
+                      // An unlabelled icon is a blank button to a screen
+                      // reader, and this one sends the question.
+                      tooltip: context.l10n.assistantSend,
                       icon: const Icon(Icons.arrow_upward_rounded),
                     ),
                   ],
