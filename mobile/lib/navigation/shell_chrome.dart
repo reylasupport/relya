@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import '../core/design/tokens/app_skin.dart';
 import '../core/design/tokens/app_skin_style.dart';
 import '../core/design/tokens/app_semantic_colors.dart';
+import '../core/design/tokens/app_durations.dart';
 import '../core/extensions/context_extensions.dart';
+import '../shared/domain/user_profile.dart';
+import '../shared/widgets/profile_avatar.dart';
 
 /// One destination in the bar. Branch index, not slot index: the pastel
 /// design leaves Inbox out of the bar, so the two stop matching.
@@ -52,6 +55,9 @@ class RelyaNavBar extends StatelessWidget {
     required this.onSelected,
     this.pendingCount = 0,
     this.onCapture,
+    this.showProfile = false,
+    this.onProfile,
+    this.profile,
   });
 
   /// The current branch. May be a branch that has no slot in this design, in
@@ -65,6 +71,21 @@ class RelyaNavBar extends StatelessWidget {
 
   /// Only used by the design that sinks the capture button into the bar.
   final VoidCallback? onCapture;
+
+  /// Whether to carry the account avatar at the end of the bar.
+  ///
+  /// The avatar lives in the Home header, which means it is gone the moment
+  /// somebody scrolls, and absent altogether on the other four tabs. Rather
+  /// than repeat it everywhere, it follows the user down here when its own
+  /// place on screen is no longer visible - so the way to your account is one
+  /// thumb-reach away from anywhere, without ever being in two places at once.
+  final bool showProfile;
+
+  final VoidCallback? onProfile;
+
+  /// Whose initials to draw. Passed in rather than watched, so the bar stays
+  /// a widget you can put on screen on its own.
+  final UserProfile? profile;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +123,14 @@ class RelyaNavBar extends StatelessWidget {
         ),
       );
     }
+
+    slots.add(
+      _ProfileSlot(
+        visible: showProfile,
+        profile: profile,
+        onTap: onProfile ?? () {},
+      ),
+    );
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -243,6 +272,63 @@ class CaptureButton extends StatelessWidget {
                 color: onGradient,
               ),
             ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The account avatar, arriving at the end of the bar.
+///
+/// It takes its own width rather than floating over the last destination:
+/// covering a tab to reach the account would trade one way in for another.
+/// The destinations give up a few points each instead, which is why this
+/// animates a width and not an offset.
+class _ProfileSlot extends StatelessWidget {
+  const _ProfileSlot({
+    required this.visible,
+    required this.profile,
+    required this.onTap,
+  });
+
+  final bool visible;
+  final UserProfile? profile;
+  final VoidCallback onTap;
+
+  /// Enough for a 48dp target with a little air either side.
+  static const double _width = 56;
+
+  @override
+  Widget build(BuildContext context) {
+    // Someone who asked the system to slow down still gets the avatar; they
+    // just get it without the slide.
+    final stillness = MediaQuery.disableAnimationsOf(context);
+
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(end: visible ? 1 : 0),
+      duration: stillness ? Duration.zero : AppDurations.normal,
+      curve: AppDurations.emphasised,
+      builder: (context, t, child) => ClipRect(
+        child: Align(
+          alignment: Alignment.centerRight,
+          // A factor rather than a width: the child keeps its own size and
+          // the row simply sees less of it, so nothing is ever asked to lay
+          // itself out in zero points.
+          widthFactor: t,
+          child: Opacity(opacity: t, child: child),
+        ),
+      ),
+      child: SizedBox(
+        width: _width,
+        child: Center(
+          child: ProfileAvatar(
+            profile: profile,
+            size: 32,
+            // Not a target while it is on its way out, or a keyboard and a
+            // screen reader would both find a button nobody can see.
+            onTap: visible ? onTap : null,
+            semanticLabel: context.l10n.accountTitle,
           ),
         ),
       ),

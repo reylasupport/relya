@@ -8,6 +8,8 @@ import '../core/design/tokens/app_skin_style.dart';
 import '../core/extensions/context_extensions.dart';
 import '../features/capture/presentation/capture_sheet.dart';
 import '../features/inbox/application/inbox_controller.dart';
+import '../shared/data/providers.dart';
+import 'routes.dart';
 import 'shell_chrome.dart';
 
 /// The five areas, plus the one button that matters most.
@@ -16,14 +18,46 @@ import 'shell_chrome.dart';
 /// place, and it stays reachable with a thumb from every screen in the shell.
 const int _assistantTab = 4;
 
-class AppShell extends ConsumerWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
+  /// Roughly the height of the Home header. Past this the account avatar has
+  /// left the screen, and the bar picks it up.
+  static const double _headerHeight = 72;
+
+  /// Home is the only tab that carries the avatar itself.
+  static const int _homeTab = 0;
+
+  bool _pastHeader = false;
+
+  bool _onScroll(ScrollNotification notification) {
+    // Horizontal lists - the category chips, the week strip - say nothing
+    // about whether the header is still on screen.
+    if (notification.metrics.axis != Axis.vertical) return false;
+    // Only the page itself. A sheet or a dropdown scrolling over the top of
+    // it must not move the bar underneath.
+    if (notification.depth > 0) return false;
+
+    final past = notification.metrics.pixels > _headerHeight;
+    if (past != _pastHeader) setState(() => _pastHeader = past);
+    return false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final navigationShell = widget.navigationShell;
     final pending = ref.watch(inboxPendingCountProvider);
+
+    // Shown wherever the avatar has nowhere else to be: every tab but Home,
+    // and Home itself once its header has scrolled away.
+    final showProfile = navigationShell.currentIndex != _homeTab || _pastHeader;
     // Two reasons to drop the floating button: the pastel design carries its
     // own inside the bar, and on the Assistant tab it would sit on top of the
     // composer's send button.
@@ -32,7 +66,10 @@ class AppShell extends ConsumerWidget {
         navigationShell.currentIndex == _assistantTab;
 
     return Scaffold(
-      body: navigationShell,
+      body: NotificationListener<ScrollNotification>(
+        onNotification: _onScroll,
+        child: navigationShell,
+      ),
       // Hidden on the Assistant tab: it would sit on top of the composer's
       // send button, and nobody captures a receipt mid-conversation. There,
       // the primary action is the question being typed.
@@ -52,6 +89,9 @@ class AppShell extends ConsumerWidget {
           index,
           initialLocation: index == navigationShell.currentIndex,
         ),
+        showProfile: showProfile,
+        profile: ref.watch(currentProfileProvider).valueOrNull,
+        onProfile: () => context.push(Routes.settings),
       ),
     );
   }

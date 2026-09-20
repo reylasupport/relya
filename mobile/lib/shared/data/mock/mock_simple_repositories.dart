@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import '../../domain/assistant_message.dart';
 import '../../domain/life_entity.dart';
+import '../../domain/life_item.dart';
+import '../../domain/life_item_type.dart';
 import '../../domain/reminder.dart';
 import '../../domain/user_preferences.dart';
 import '../../domain/user_profile.dart';
@@ -120,8 +122,24 @@ class MockProfileRepository implements ProfileRepository {
 /// Canned answers so the Assistant screen can be designed and demoed. The real
 /// implementation retrieves the user items and passes them to the model as
 /// context; neither version is allowed to answer from general knowledge.
+/// Answers out of the same fixtures every other screen is showing.
+///
+/// It used to return one hard-coded sentence to anything it was asked, which
+/// in a demo is worse than saying nothing: ask two different questions, get
+/// the same three items, and the assistant reads as broken rather than empty.
+/// This is still a mock - there is no model here - but the answers are drawn
+/// from the real fixture list, so what it says always matches what is on the
+/// screen behind it, and a second question moves on to something new.
 class MockAssistantRepository implements AssistantRepository {
+  MockAssistantRepository({List<LifeItem>? items})
+    : _items = items ?? MockFixtures.items(DateTime.now().toUtc());
+
   final List<AssistantMessage> _messages = [];
+  final List<LifeItem> _items;
+
+  /// What has already been said. "What else do I have?" is a request for the
+  /// things that were not mentioned the first time.
+  final Set<String> _mentioned = {};
 
   @override
   Future<List<AssistantMessage>> history() async => _messages.toList();
@@ -136,23 +154,150 @@ class MockAssistantRepository implements AssistantRepository {
         createdAt: DateTime.now(),
       ),
     );
-    await Future<void>.delayed(const Duration(milliseconds: 900));
+    await Future<void>.delayed(const Duration(milliseconds: 700));
+
+    final asked = question.toLowerCase();
+    final more = _asksForMore(asked);
+    var pool = _matching(asked);
+
+    // Anything already said is old news when the question is "what else".
+    if (more) {
+      final fresh = pool.where((i) => !_mentioned.contains(i.id)).toList();
+      pool = fresh.isEmpty ? const [] : fresh;
+    }
+
+    final picked = pool.take(3).toList();
+    _mentioned.addAll(picked.map((i) => i.id));
 
     final answer = AssistantMessage(
       id: 'a-${_messages.length}',
       role: AssistantRole.assistant,
-      text:
-          'You have a dentist appointment today at 15:30, the Nike return '
-          'window closes in 3 days, and your car insurance renews in 12 days.',
+      text: _say(picked, more: more),
       createdAt: DateTime.now(),
-      citedItemIds: const ['itm-dentist', 'itm-return', 'itm-insurance'],
+      citedItemIds: picked.map((i) => i.id).toList(),
     );
     _messages.add(answer);
     return answer;
   }
 
+  bool _asksForMore(String asked) => const [
+    'more',
+    'else',
+    'other',
+    'mais',
+    'outra',
+    'outro',
+    'resto',
+    'más',
+    'otra',
+  ].any(asked.contains);
+
+  /// Keyword matching, in the four languages the app ships in. Crude on
+  /// purpose: the job is to make the demo behave like something that listened,
+  /// not to pretend there is a model behind it.
+  List<LifeItem> _matching(String asked) {
+    bool has(List<String> words) => words.any(asked.contains);
+
+    final now = DateTime.now().toUtc();
+    final upcoming = [..._items]
+      ..sort((a, b) {
+        final x = a.primaryInstant;
+        final y = b.primaryInstant;
+        if (x == null) return 1;
+        if (y == null) return -1;
+        return x.compareTo(y);
+      });
+
+    if (has([
+      'pay',
+      'bill',
+      'cost',
+      'money',
+      'owe',
+      'pagar',
+      'pago',
+      'conta',
+      'dinheiro',
+      'fatura',
+      'pagamento',
+      'pagar',
+      'cobro',
+      'dinero',
+    ])) {
+      return upcoming.where((i) => i.amount != null).toList();
+    }
+
+    if (has(['return', 'refund', 'devolv', 'troca', 'devoluc'])) {
+      return upcoming
+          .where((i) => i.type == LifeItemType.returnDeadline)
+          .toList();
+    }
+
+    if (has([
+      'subscription',
+      'renew',
+      'subscri',
+      'assinatura',
+      'renova',
+      'suscrip',
+    ])) {
+      return upcoming
+          .where(
+            (i) =>
+                i.type == LifeItemType.subscription ||
+                i.type == LifeItemType.insurance,
+          )
+          .toList();
+    }
+
+    if (has(['today', 'hoje', 'hoy'])) {
+      return upcoming.where((i) {
+        final at = i.primaryInstant;
+        return at != null && at.difference(now).inHours.abs() < 24;
+      }).toList();
+    }
+
+    if (has(['week', 'semana'])) {
+      return upcoming.where((i) {
+        final at = i.primaryInstant;
+        return at != null && at.isAfter(now) && at.difference(now).inDays <= 7;
+      }).toList();
+    }
+
+    return upcoming.where((i) => i.primaryInstant != null).toList();
+  }
+
+  String _say(List<LifeItem> items, {required bool more}) {
+    if (items.isEmpty) {
+      return more
+          ? 'That is everything I am keeping track of for you.'
+          : 'I could not find anything about that in your items.';
+    }
+
+    final parts = items.map(_phrase).toList();
+    final list = parts.length == 1
+        ? parts.single
+        : '${parts.take(parts.length - 1).join(', ')} and ${parts.last}';
+
+    return more ? 'There is also $list.' : 'You have $list.';
+  }
+
+  String _phrase(LifeItem item) {
+    final at = item.primaryInstant;
+    final title = item.title.toLowerCase();
+    if (at == null) return title;
+
+    final days = at.difference(DateTime.now().toUtc()).inDays;
+    if (days <= 0) return '$title today';
+    if (days == 1) return '$title tomorrow';
+    return '$title in $days days';
+  }
+
   @override
-  Future<void> clear() async => _messages.clear();
+  Future<void> clear() async {
+    _messages.clear();
+    _mentioned.clear();
+  }
 }
 
 /// Keeps the corrections in memory so the confirmation flow can be tested
