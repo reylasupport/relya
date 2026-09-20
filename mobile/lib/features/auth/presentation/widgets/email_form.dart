@@ -4,6 +4,7 @@ import '../../../../core/design/tokens/app_spacing.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../application/auth_controller.dart';
 import '../../domain/auth_service.dart';
+import '../../../../core/config/demo_account.dart';
 
 /// Email and password, plus the passwordless escape hatch.
 ///
@@ -20,8 +21,10 @@ class EmailForm extends StatefulWidget {
 }
 
 class _EmailFormState extends State<EmailForm> {
-  final _email = TextEditingController();
-  final _password = TextEditingController();
+  // Pre-filled on a mock build so the app can be opened in one tap; empty
+  // on any build that talks to a real backend. See DemoAccount.
+  final _email = TextEditingController(text: DemoAccount.prefilledEmail);
+  final _password = TextEditingController(text: DemoAccount.prefilledPassword);
   final _formKey = GlobalKey<FormState>();
   bool _obscured = true;
 
