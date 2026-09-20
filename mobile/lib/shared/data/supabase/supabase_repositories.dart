@@ -1,8 +1,5 @@
 import 'dart:convert';
 
-import 'package:supabase_flutter/supabase_flutter.dart';
-
-import '../../../core/errors/app_exception.dart';
 import '../../../core/logging/app_logger.dart';
 import '../../../services/supabase/supabase_service.dart';
 import '../../domain/assistant_message.dart';
@@ -15,6 +12,7 @@ import '../repositories/entity_repository.dart';
 import '../repositories/feedback_repository.dart';
 import '../repositories/profile_repository.dart';
 import '../repositories/reminder_repository.dart';
+import 'supabase_error.dart';
 
 class SupabaseReminderRepository implements ReminderRepository {
   SupabaseReminderRepository(this._supabase);
@@ -239,11 +237,11 @@ class SupabaseAssistantRepository implements AssistantRepository {
         'ask-assistant',
         body: {'question': question},
       );
-    } on FunctionException catch (error) {
-      if (error.status == 429) {
-        throw QuotaExceeded('Daily assistant limit reached', cause: error);
-      }
-      rethrow;
+    } on Object catch (error) {
+      throw SupabaseErrors.fromFunction(
+        error,
+        quotaMessage: 'Daily assistant limit reached',
+      );
     }
 
     final answer = AssistantMessage(

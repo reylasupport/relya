@@ -13,6 +13,7 @@ import '../../../services/supabase/supabase_service.dart';
 import '../../domain/capture.dart';
 import '../../domain/extraction_result.dart';
 import '../repositories/capture_repository.dart';
+import 'supabase_error.dart';
 
 /// The real capture pipeline.
 ///
@@ -174,24 +175,27 @@ class SupabaseCaptureRepository implements CaptureRepository {
       final analysis = AnalysisResult.fromJson(data);
       _changes.add(null);
       return analysis;
-    } on FunctionException catch (error, stack) {
+    } on Object catch (error, stack) {
+      final mapped = SupabaseErrors.fromFunction(
+        error,
+        quotaMessage: 'Monthly capture limit reached',
+      );
+
       // The monthly allowance is not a broken capture. The file is fine, and
       // the same request succeeds the moment the user upgrades or the period
       // rolls over, so it goes back to the queue rather than to failed - and
       // the caller gets an error it can turn into an offer instead of an
       // apology.
-      if (error.status == 429) {
+      if (mapped is QuotaExceeded) {
         AppLogger.warn('Capture quota reached');
         await _supabase
             .table(_table)
             .update({'status': CaptureStatus.queued.wire})
             .eq('id', captureId);
         _changes.add(null);
-        throw QuotaExceeded('Monthly capture limit reached', cause: error);
+        throw mapped;
       }
-      await _markFailed(captureId, error, stack);
-      throw ExtractionFailure('Could not analyse this capture', cause: error);
-    } on Object catch (error, stack) {
+
       await _markFailed(captureId, error, stack);
       throw ExtractionFailure('Could not analyse this capture', cause: error);
     }

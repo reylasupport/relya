@@ -61,20 +61,8 @@ IconData captureIcon(Capture capture) => switch (capture.kind) {
 };
 
 /// Opens the confirmation screen for any capture that still has work left.
-///
-/// Restricting this to needsConfirmation left two dead ends in the Inbox. A
-/// capture created on the server - a forwarded email - arrives queued and
-/// nothing had ever analysed it, so the row sat there forever and could not be
-/// tapped. A failed one had no way back either, even though the analysis
-/// screen has always had a retry. Both open here now: the controller reuses a
-/// cached analysis when there is one and runs the pipeline when there is not.
 void openCapture(BuildContext context, Capture capture) {
-  const openable = {
-    CaptureStatus.needsConfirmation,
-    CaptureStatus.queued,
-    CaptureStatus.failed,
-  };
-  if (!openable.contains(capture.status)) return;
+  if (!capture.status.opensConfirmation) return;
   context.push(Routes.analysis(capture.id));
 }
 

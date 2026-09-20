@@ -60,6 +60,20 @@ enum CaptureStatus {
       this == completed || this == failed || this == archived;
 
   bool get isWorking => this == queued || this == processing;
+
+  /// Whether tapping this capture in the Inbox should lead anywhere.
+  ///
+  /// The Inbox used to open only [needsConfirmation], which left two rows that
+  /// could not be tapped at all. A capture created on the server - a forwarded
+  /// email - arrives [queued] and nothing on the device had ever analysed it.
+  /// A [failed] one had no way back either, though the confirmation screen has
+  /// always had a retry. Both belong here: the analysis controller reuses a
+  /// cached reading when there is one and runs the pipeline when there is not.
+  ///
+  /// [processing] is left out on purpose - something is already working on it
+  /// - and so are the three terminal states, which have nothing left to ask.
+  bool get opensConfirmation =>
+      this == needsConfirmation || this == queued || this == failed;
 }
 
 /// One thing the user sent in. Holds the raw input and the pipeline state; the
