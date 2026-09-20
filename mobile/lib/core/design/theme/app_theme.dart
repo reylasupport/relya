@@ -192,7 +192,18 @@ abstract final class AppTheme {
       badgeTheme: BadgeThemeData(
         backgroundColor: semantic.danger,
         textColor: semantic.onDanger,
-        textStyle: text.labelSmall?.copyWith(fontWeight: FontWeight.w700),
+        // Bigger than the Material default on purpose. At the stock 16dp a
+        // single digit is mostly the antialiased rim of the circle rather
+        // than the circle, which is both hard to read at arm length and the
+        // reason the contrast guideline was sampling a washed-out pink
+        // instead of either of the two colours actually chosen here.
+        largeSize: 20,
+        padding: const EdgeInsets.symmetric(horizontal: 5),
+        textStyle: text.labelSmall?.copyWith(
+          fontSize: 12,
+          height: 1.1,
+          fontWeight: FontWeight.w700,
+        ),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
