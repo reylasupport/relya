@@ -185,6 +185,15 @@ abstract final class AppTheme {
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         labelTextStyle: WidgetStatePropertyAll(text.labelSmall),
       ),
+      // The pending badge on the Inbox bell took whatever red ColorScheme
+      // .fromSeed produced, which is a different colour in each of the four
+      // skins and designed in none of them - on cosy it came out at 1.97:1.
+      // danger and onDanger are chosen, and carry 5.44:1.
+      badgeTheme: BadgeThemeData(
+        backgroundColor: semantic.danger,
+        textColor: semantic.onDanger,
+        textStyle: text.labelSmall?.copyWith(fontWeight: FontWeight.w700),
+      ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
         backgroundColor: scheme.inverseSurface,
