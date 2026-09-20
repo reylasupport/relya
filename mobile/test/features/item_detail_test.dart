@@ -62,7 +62,9 @@ void main() {
 
     await tester.tap(find.text('Add to calendar'));
     await tester.pumpAndSettle();
-    expect(find.text('Done'), findsWidgets);
+    // The confirmation says where the event went, not just that something
+    // happened, and the button stops offering to add it a second time.
+    expect(find.text('In your calendar'), findsWidgets);
 
     await tester.tap(find.text('This is wrong'));
     await tester.pumpAndSettle();

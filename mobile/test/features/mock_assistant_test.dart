@@ -76,4 +76,81 @@ void main() {
     expect(answer.citedItemIds, isNot(contains('itm-dentist')));
     expect(answer.citedItemIds, isNotEmpty);
   });
+
+  group('one week is not the next one', () {
+    test("three questions about three weeks give three answers", () async {
+      final assistant = MockAssistantRepository();
+
+      final now = await assistant.ask(
+        "Tenho alguma coisa importante esta semana?",
+        languageCode: "pt",
+      );
+      final next = await assistant.ask(
+        "e na proxima semana?",
+        languageCode: "pt",
+      );
+      final after = await assistant.ask(
+        "e na semana a seguir a essa?",
+        languageCode: "pt",
+      );
+
+      // The screenshot that started this: the same sentence three times.
+      expect(next.text, isNot(now.text));
+      expect(after.text, isNot(next.text));
+    });
+
+    test("a later week never repeats an earlier one", () async {
+      final assistant = MockAssistantRepository();
+
+      final now = await assistant.ask("this week?");
+      final next = await assistant.ask("and next week?");
+
+      for (final id in next.citedItemIds) {
+        expect(now.citedItemIds, isNot(contains(id)));
+      }
+    });
+
+    test("an empty week says so instead of showing another one", () async {
+      final assistant = MockAssistantRepository();
+
+      // Far enough out that the fixtures have nothing there.
+      await assistant.ask("this week?");
+      var answer = await assistant.ask("and next week?");
+      for (var i = 0; i < 6; i++) {
+        answer = await assistant.ask("and the week after that?");
+      }
+
+      expect(answer.citedItemIds, isEmpty);
+    });
+  });
+
+  group("it answers in the language the app is in", () {
+    test("Portuguese", () async {
+      final answer = await MockAssistantRepository().ask(
+        "O que tenho esta semana?",
+        languageCode: "pt",
+      );
+
+      // The bug in the screenshot: an English sentence in a Portuguese app.
+      expect(answer.text, isNot(startsWith("You have")));
+    });
+
+    test("Spanish", () async {
+      final answer = await MockAssistantRepository().ask(
+        "Que tengo esta semana?",
+        languageCode: "es",
+      );
+
+      expect(answer.text, isNot(startsWith("You have")));
+    });
+
+    test("and English when that is what it is set to", () async {
+      final answer = await MockAssistantRepository().ask(
+        "What do I have this week?",
+        languageCode: "en",
+      );
+
+      expect(answer.text, startsWith("You have"));
+    });
+  });
 }

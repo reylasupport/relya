@@ -122,14 +122,85 @@ class MockProfileRepository implements ProfileRepository {
 /// Canned answers so the Assistant screen can be designed and demoed. The real
 /// implementation retrieves the user items and passes them to the model as
 /// context; neither version is allowed to answer from general knowledge.
+/// The words the demo answers in.
+///
+/// Small on purpose. These are not user-facing strings in the ARB sense -
+/// nothing in a shipped build reaches them, because a real build asks a model
+/// that replies in the language of the question. They exist so the demo does
+/// not answer a Portuguese question in English, which is the kind of detail
+/// that makes the whole thing look unfinished.
+class _Phrases {
+  const _Phrases({
+    required this.youHave,
+    required this.alsoHave,
+    required this.thatIsEverything,
+    required this.nothingThen,
+    required this.today,
+    required this.tomorrow,
+    required this.inDays,
+    required this.and,
+  });
+
+  factory _Phrases.of(String languageCode) => switch (languageCode) {
+    'pt' => const _Phrases(
+      youHave: 'Tens ',
+      alsoHave: 'Tens também ',
+      thatIsEverything: 'É tudo o que tenho guardado por ti.',
+      nothingThen: 'Nessa altura não tens nada marcado.',
+      today: 'hoje',
+      tomorrow: 'amanhã',
+      inDays: 'daqui a ',
+      and: ' e ',
+    ),
+    'es' => const _Phrases(
+      youHave: 'Tienes ',
+      alsoHave: 'También tienes ',
+      thatIsEverything: 'Eso es todo lo que tengo guardado.',
+      nothingThen: 'No tienes nada en esas fechas.',
+      today: 'hoy',
+      tomorrow: 'mañana',
+      inDays: 'en ',
+      and: ' y ',
+    ),
+    _ => const _Phrases(
+      youHave: 'You have ',
+      alsoHave: 'You also have ',
+      thatIsEverything: 'That is everything I am keeping track of for you.',
+      nothingThen: 'Nothing is booked for you then.',
+      today: 'today',
+      tomorrow: 'tomorrow',
+      inDays: 'in ',
+      and: ' and ',
+    ),
+  };
+
+  final String youHave;
+  final String alsoHave;
+  final String thatIsEverything;
+  final String nothingThen;
+  final String today;
+  final String tomorrow;
+  final String inDays;
+  final String and;
+
+  String days(int n) => switch (inDays) {
+    'daqui a ' => 'daqui a $n dias',
+    'en ' => 'en $n días',
+    _ => 'in $n days',
+  };
+}
+
 /// Answers out of the same fixtures every other screen is showing.
 ///
-/// It used to return one hard-coded sentence to anything it was asked, which
-/// in a demo is worse than saying nothing: ask two different questions, get
-/// the same three items, and the assistant reads as broken rather than empty.
-/// This is still a mock - there is no model here - but the answers are drawn
-/// from the real fixture list, so what it says always matches what is on the
-/// screen behind it, and a second question moves on to something new.
+/// It used to return one hard-coded English sentence to anything it was asked,
+/// which in a demo is worse than answering nothing: ask three questions about
+/// three different weeks, get the same three items back in the wrong language,
+/// and the assistant reads as broken rather than empty.
+///
+/// There is still no model here. What this does is answer from the real
+/// fixture list, in the language the interface is in, and keep enough context
+/// to know that "and the week after that" is a different question from the one
+/// before it.
 class MockAssistantRepository implements AssistantRepository {
   MockAssistantRepository({List<LifeItem>? items})
     : _items = items ?? MockFixtures.items(DateTime.now().toUtc());
@@ -137,15 +208,21 @@ class MockAssistantRepository implements AssistantRepository {
   final List<AssistantMessage> _messages = [];
   final List<LifeItem> _items;
 
-  /// What has already been said. "What else do I have?" is a request for the
-  /// things that were not mentioned the first time.
+  /// What has already been said, so "what else?" moves on.
   final Set<String> _mentioned = {};
+
+  /// Which week was last asked about. "Next week" means nothing on its own -
+  /// it means the week after whichever one we were just talking about.
+  int? _week;
 
   @override
   Future<List<AssistantMessage>> history() async => _messages.toList();
 
   @override
-  Future<AssistantMessage> ask(String question) async {
+  Future<AssistantMessage> ask(
+    String question, {
+    String languageCode = 'en',
+  }) async {
     _messages.add(
       AssistantMessage(
         id: 'q-${_messages.length}',
@@ -156,14 +233,14 @@ class MockAssistantRepository implements AssistantRepository {
     );
     await Future<void>.delayed(const Duration(milliseconds: 700));
 
-    final asked = question.toLowerCase();
-    final more = _asksForMore(asked);
-    var pool = _matching(asked);
+    final phrases = _Phrases.of(languageCode);
+    final asked = _fold(question);
+    final week = _weekAskedAbout(asked);
+    final more = week == null && _asksForMore(asked);
 
-    // Anything already said is old news when the question is "what else".
+    var pool = week != null ? _inWeek(week) : _matching(asked);
     if (more) {
-      final fresh = pool.where((i) => !_mentioned.contains(i.id)).toList();
-      pool = fresh.isEmpty ? const [] : fresh;
+      pool = pool.where((i) => !_mentioned.contains(i.id)).toList();
     }
 
     final picked = pool.take(3).toList();
@@ -172,7 +249,7 @@ class MockAssistantRepository implements AssistantRepository {
     final answer = AssistantMessage(
       id: 'a-${_messages.length}',
       role: AssistantRole.assistant,
-      text: _say(picked, more: more),
+      text: _say(picked, phrases, more: more, aboutAWeek: week != null),
       createdAt: DateTime.now(),
       citedItemIds: picked.map((i) => i.id).toList(),
     );
@@ -180,7 +257,23 @@ class MockAssistantRepository implements AssistantRepository {
     return answer;
   }
 
-  bool _asksForMore(String asked) => const [
+  /// Lower case and without accents, so "próxima" and "proxima" are the same
+  /// word to everything below.
+  String _fold(String value) {
+    const from = 'áàâãäéèêëíìîïóòôõöúùûüç';
+    const to = 'aaaaaeeeeiiiiooooouuuuc';
+    final buffer = StringBuffer();
+    for (final rune in value.toLowerCase().runes) {
+      final char = String.fromCharCode(rune);
+      final at = from.indexOf(char);
+      buffer.write(at == -1 ? char : to[at]);
+    }
+    return buffer.toString();
+  }
+
+  bool _has(String asked, List<String> words) => words.any(asked.contains);
+
+  bool _asksForMore(String asked) => _has(asked, [
     'more',
     'else',
     'other',
@@ -188,18 +281,46 @@ class MockAssistantRepository implements AssistantRepository {
     'outra',
     'outro',
     'resto',
-    'más',
     'otra',
-  ].any(asked.contains);
+  ]);
 
-  /// Keyword matching, in the four languages the app ships in. Crude on
-  /// purpose: the job is to make the demo behave like something that listened,
-  /// not to pretend there is a model behind it.
-  List<LifeItem> _matching(String asked) {
-    bool has(List<String> words) => words.any(asked.contains);
+  /// Which week the question is about, counting from the one we are in.
+  ///
+  /// Null when the question is not about a week at all. The state matters:
+  /// asked three times in a row, "this week", "and next week" and "and the
+  /// week after that" have to be three different answers, and they only are
+  /// if each one is read relative to the last.
+  int? _weekAskedAbout(String asked) {
+    if (!_has(asked, ['week', 'semana'])) {
+      // "And the one after that?" can arrive without the word at all.
+      if (_week != null && _has(asked, ['seguir', 'seguinte', 'after'])) {
+        return _week = _week! + 1;
+      }
+      return null;
+    }
 
+    if (_has(asked, ['this ', 'esta ', 'essa '])) return _week = 0;
+    if (_has(asked, ['seguir', 'seguinte', 'after'])) {
+      return _week = (_week ?? 0) + 1;
+    }
+    if (_has(asked, ['next', 'proxima', 'proximo', 'siguiente', 'que vem'])) {
+      return _week = (_week ?? 0) + 1;
+    }
+    return _week = 0;
+  }
+
+  List<LifeItem> _inWeek(int offset) {
     final now = DateTime.now().toUtc();
-    final upcoming = [..._items]
+    return _upcoming().where((item) {
+      final at = item.primaryInstant;
+      if (at == null) return false;
+      final days = at.difference(now).inDays;
+      return days >= offset * 7 && days < (offset + 1) * 7;
+    }).toList();
+  }
+
+  List<LifeItem> _upcoming() {
+    final sorted = [..._items]
       ..sort((a, b) {
         final x = a.primaryInstant;
         final y = b.primaryInstant;
@@ -207,33 +328,36 @@ class MockAssistantRepository implements AssistantRepository {
         if (y == null) return -1;
         return x.compareTo(y);
       });
+    return sorted.where((i) => i.primaryInstant != null).toList();
+  }
 
-    if (has([
+  /// Keyword matching, in the languages the app ships in. Crude on purpose:
+  /// the job is to behave like something that listened, not to pretend there
+  /// is a model behind it.
+  List<LifeItem> _matching(String asked) {
+    if (_has(asked, [
       'pay',
       'bill',
       'cost',
       'money',
       'owe',
       'pagar',
-      'pago',
       'conta',
       'dinheiro',
       'fatura',
       'pagamento',
-      'pagar',
-      'cobro',
       'dinero',
     ])) {
-      return upcoming.where((i) => i.amount != null).toList();
+      return _upcoming().where((i) => i.amount != null).toList();
     }
 
-    if (has(['return', 'refund', 'devolv', 'troca', 'devoluc'])) {
-      return upcoming
+    if (_has(asked, ['return', 'refund', 'devolv', 'troca'])) {
+      return _upcoming()
           .where((i) => i.type == LifeItemType.returnDeadline)
           .toList();
     }
 
-    if (has([
+    if (_has(asked, [
       'subscription',
       'renew',
       'subscri',
@@ -241,7 +365,7 @@ class MockAssistantRepository implements AssistantRepository {
       'renova',
       'suscrip',
     ])) {
-      return upcoming
+      return _upcoming()
           .where(
             (i) =>
                 i.type == LifeItemType.subscription ||
@@ -250,53 +374,52 @@ class MockAssistantRepository implements AssistantRepository {
           .toList();
     }
 
-    if (has(['today', 'hoje', 'hoy'])) {
-      return upcoming.where((i) {
-        final at = i.primaryInstant;
-        return at != null && at.difference(now).inHours.abs() < 24;
+    if (_has(asked, ['today', 'hoje', 'hoy'])) {
+      final now = DateTime.now().toUtc();
+      return _upcoming().where((i) {
+        final at = i.primaryInstant!;
+        return at.difference(now).inHours.abs() < 24;
       }).toList();
     }
 
-    if (has(['week', 'semana'])) {
-      return upcoming.where((i) {
-        final at = i.primaryInstant;
-        return at != null && at.isAfter(now) && at.difference(now).inDays <= 7;
-      }).toList();
-    }
-
-    return upcoming.where((i) => i.primaryInstant != null).toList();
+    return _upcoming();
   }
 
-  String _say(List<LifeItem> items, {required bool more}) {
+  String _say(
+    List<LifeItem> items,
+    _Phrases phrases, {
+    required bool more,
+    required bool aboutAWeek,
+  }) {
     if (items.isEmpty) {
-      return more
-          ? 'That is everything I am keeping track of for you.'
-          : 'I could not find anything about that in your items.';
+      if (aboutAWeek) return phrases.nothingThen;
+      return more ? phrases.thatIsEverything : phrases.thatIsEverything;
     }
 
-    final parts = items.map(_phrase).toList();
+    final parts = items.map((i) => _phrase(i, phrases)).toList();
     final list = parts.length == 1
         ? parts.single
-        : '${parts.take(parts.length - 1).join(', ')} and ${parts.last}';
+        : '${parts.take(parts.length - 1).join(', ')}${phrases.and}${parts.last}';
 
-    return more ? 'There is also $list.' : 'You have $list.';
+    return '${more ? phrases.alsoHave : phrases.youHave}$list.';
   }
 
-  String _phrase(LifeItem item) {
+  String _phrase(LifeItem item, _Phrases phrases) {
     final at = item.primaryInstant;
     final title = item.title.toLowerCase();
     if (at == null) return title;
 
     final days = at.difference(DateTime.now().toUtc()).inDays;
-    if (days <= 0) return '$title today';
-    if (days == 1) return '$title tomorrow';
-    return '$title in $days days';
+    if (days <= 0) return '$title ${phrases.today}';
+    if (days == 1) return '$title ${phrases.tomorrow}';
+    return '$title ${phrases.days(days)}';
   }
 
   @override
   Future<void> clear() async {
     _messages.clear();
     _mentioned.clear();
+    _week = null;
   }
 }
 

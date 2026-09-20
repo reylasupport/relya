@@ -14,7 +14,9 @@ import '../../../core/design/tokens/type_palette.dart';
 import '../../../core/formatting/app_money_format.dart';
 import '../../../core/ids/ids.dart';
 import '../../../l10n/gen/app_localizations.dart';
+import '../../../core/logging/app_logger.dart';
 import '../../../services/calendar/calendar_service.dart';
+import '../../../services/prefs/local_prefs.dart';
 import '../../../shared/data/providers.dart';
 import '../../../services/notifications/reminder_scheduler.dart';
 import '../../../shared/domain/life_item.dart';
@@ -251,13 +253,7 @@ class _Detail extends ConsumerWidget {
         Row(
           children: [
             if (start != null) ...[
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () => _addToCalendar(context, ref),
-                  icon: const Icon(Icons.calendar_month_rounded, size: 18),
-                  label: Text(context.l10n.reminderAddToCalendar),
-                ),
-              ),
+              Expanded(child: _CalendarButton(item: item)),
               const SizedBox(width: AppSpacing.sm),
             ],
             Expanded(
@@ -397,19 +393,6 @@ class _Detail extends ConsumerWidget {
 
   Future<void> _resume(BuildContext context, WidgetRef ref) async {
     await ref.read(itemActionsProvider).resume(item);
-  }
-
-  Future<void> _addToCalendar(BuildContext context, WidgetRef ref) async {
-    final messenger = ScaffoldMessenger.of(context);
-    final added = await ref.read(calendarServiceProvider).addEvent(item);
-    if (!context.mounted) return;
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text(
-          added ? context.l10n.actionDone : context.l10n.errorGeneric,
-        ),
-      ),
-    );
   }
 
   /// Corrections are the training signal for everything the pipeline does
@@ -721,5 +704,108 @@ class _Reminders extends StatelessWidget {
           ),
       ],
     );
+  }
+}
+
+/// Hands an item to the calendar, once.
+///
+/// add_2_calendar can add an event and nothing else - it cannot read a
+/// calendar and it cannot delete from one. That left a button which happily
+/// created a second copy of something already there, and no way back, so the
+/// honest thing is to say what it did and where to undo it. The alternative
+/// would be device_calendar: a read-write permission, a review question in
+/// both stores, and a whole calendar client to maintain, to save a trip to an
+/// app the user already has open half the time.
+class _CalendarButton extends ConsumerStatefulWidget {
+  const _CalendarButton({required this.item});
+
+  final LifeItem item;
+
+  @override
+  ConsumerState<_CalendarButton> createState() => _CalendarButtonState();
+}
+
+class _CalendarButtonState extends ConsumerState<_CalendarButton> {
+  bool _busy = false;
+
+  bool get _alreadyAdded {
+    try {
+      return ref.read(localPrefsProvider).isInCalendar(widget.item.id);
+    } on StateError {
+      return false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    final added = _alreadyAdded;
+
+    return OutlinedButton.icon(
+      onPressed: _busy ? null : () => added ? _explain(context) : _add(context),
+      icon: Icon(
+        added ? Icons.event_available_rounded : Icons.calendar_month_rounded,
+        size: 18,
+        color: added ? context.semantic.success : null,
+      ),
+      label: Text(
+        added ? l10n.calendarInYours : l10n.reminderAddToCalendar,
+        overflow: TextOverflow.ellipsis,
+      ),
+    );
+  }
+
+  Future<void> _add(BuildContext context) async {
+    setState(() => _busy = true);
+    final messenger = ScaffoldMessenger.of(context);
+    final failed = context.l10n.errorGeneric;
+    final done = context.l10n.calendarInYours;
+
+    try {
+      final ok = await ref.read(calendarServiceProvider).addEvent(widget.item);
+      if (!ok) {
+        messenger.showSnackBar(SnackBar(content: Text(failed)));
+        return;
+      }
+      // Only what this device actually handed over. The sheet can still be
+      // cancelled on the other side, which is why the copy says where it is
+      // rather than promising it is there.
+      try {
+        await ref.read(localPrefsProvider).setInCalendar(widget.item.id);
+      } on StateError {
+        // No prefs in this build; the button simply will not remember.
+      }
+      messenger.showSnackBar(SnackBar(content: Text(done)));
+    } catch (error, stack) {
+      AppLogger.error('Could not add to the calendar', error, stack);
+      messenger.showSnackBar(SnackBar(content: Text(failed)));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  /// Why there is no Remove here, and what to do instead.
+  Future<void> _explain(BuildContext context) async {
+    final l10n = context.l10n;
+    final again = await showDialog<bool>(
+      context: context,
+      builder: (dialog) => AlertDialog(
+        title: Text(l10n.calendarInYours),
+        content: Text(l10n.calendarRemoveHint),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialog).pop(false),
+            child: Text(l10n.actionClose),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialog).pop(true),
+            child: Text(l10n.calendarAddAgain),
+          ),
+        ],
+      ),
+    );
+
+    if (again != true || !context.mounted) return;
+    await _add(context);
   }
 }

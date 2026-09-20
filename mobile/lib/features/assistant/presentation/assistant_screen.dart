@@ -53,7 +53,12 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
     _scrollToEnd();
 
     try {
-      final answer = await ref.read(assistantRepositoryProvider).ask(question);
+      final answer = await ref
+          .read(assistantRepositoryProvider)
+          .ask(
+            question,
+            languageCode: Localizations.localeOf(context).languageCode,
+          );
       if (!mounted) return;
       // The server answers with nothing at all when the user has no items yet.
       // An empty bubble reads as a broken assistant, so say why it is empty.

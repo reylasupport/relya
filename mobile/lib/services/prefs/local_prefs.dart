@@ -11,6 +11,7 @@ class LocalPrefs {
   static const String _lastTimezone = 'last_timezone';
   static const String _firstCaptureTracked = 'first_capture_tracked_v1';
   static const String _notificationsExplained = 'notifications_explained_v1';
+  static const String _inCalendar = 'items_in_calendar_v1';
 
   final SharedPreferences _prefs;
 
@@ -44,6 +45,24 @@ class LocalPrefs {
 
   Future<void> setNotificationsExplained() =>
       _prefs.setBool(_notificationsExplained, true);
+
+  /// Items this device has already handed to the calendar.
+  ///
+  /// add_2_calendar can add an event and nothing else: it cannot look, and it
+  /// cannot delete. So the app has no way of knowing what is in somebody's
+  /// calendar - only what it put there itself. That is enough to stop
+  /// offering the same event a second time, which is what made the button
+  /// confusing: tapping it again looked like it had done nothing.
+  ///
+  /// Per device on purpose. A calendar is a thing on a phone, not on an
+  /// account.
+  Set<String> get itemsInCalendar =>
+      (_prefs.getStringList(_inCalendar) ?? const []).toSet();
+
+  bool isInCalendar(String itemId) => itemsInCalendar.contains(itemId);
+
+  Future<void> setInCalendar(String itemId) =>
+      _prefs.setStringList(_inCalendar, {...itemsInCalendar, itemId}.toList());
 
   /// Used to notice that the user has travelled, so reminders anchored to a
   /// local wall-clock time can be recomputed.

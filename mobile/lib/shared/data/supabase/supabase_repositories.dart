@@ -221,7 +221,10 @@ class SupabaseAssistantRepository implements AssistantRepository {
   Future<List<AssistantMessage>> history() async => _local.toList();
 
   @override
-  Future<AssistantMessage> ask(String question) async {
+  Future<AssistantMessage> ask(
+    String question, {
+    String languageCode = 'en',
+  }) async {
     _local.add(
       AssistantMessage(
         id: 'q-${DateTime.now().microsecondsSinceEpoch}',

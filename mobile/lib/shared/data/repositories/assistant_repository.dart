@@ -6,7 +6,14 @@ import '../../domain/assistant_message.dart';
 abstract interface class AssistantRepository {
   Future<List<AssistantMessage>> history();
 
-  Future<AssistantMessage> ask(String question);
+  /// [languageCode] is what the answer should be written in.
+  ///
+  /// The real implementation ignores it: the model is told to reply in the
+  /// language of the question, which handles the case where somebody asks in
+  /// Portuguese on an interface set to English. The demo cannot read a
+  /// question, so it is told instead - and answering an app set to Portuguese
+  /// in English is exactly the kind of detail that makes a demo look unfinished.
+  Future<AssistantMessage> ask(String question, {String languageCode});
 
   Future<void> clear();
 }
