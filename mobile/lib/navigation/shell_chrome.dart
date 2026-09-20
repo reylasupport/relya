@@ -92,6 +92,7 @@ class RelyaNavBar extends StatelessWidget {
     final skin = context.appSkin;
     final colors = context.colors;
     final centre = skin.nav == SkinNav.centre;
+    final floating = skin.nav == SkinNav.floating;
 
     final dests = centre ? _all().where((d) => d.branch != 1).toList() : _all();
 
@@ -124,6 +125,15 @@ class RelyaNavBar extends StatelessWidget {
       );
     }
 
+    if (floating) {
+      slots.add(
+        SizedBox(
+          width: 58,
+          child: Center(child: _SquareCapture(onPressed: onCapture ?? () {})),
+        ),
+      );
+    }
+
     slots.add(
       _ProfileSlot(
         visible: showProfile,
@@ -131,6 +141,37 @@ class RelyaNavBar extends StatelessWidget {
         onTap: onProfile ?? () {},
       ),
     );
+
+    if (floating) {
+      // No line across the screen and nothing docked to the edge: the bar is
+      // an object lying on the content, which is the whole point of this
+      // design. It is also why this skin has no floating capture button -
+      // there would be two things hovering over the same content.
+      return SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(14, 0, 14, 10),
+          child: Container(
+            height: 62,
+            padding: const EdgeInsets.symmetric(horizontal: 6),
+            decoration: BoxDecoration(
+              color: colors.surfaceContainer,
+              borderRadius: BorderRadius.circular(22),
+              boxShadow: [
+                BoxShadow(
+                  color:
+                      (context.isDark ? Colors.black : const Color(0xFF111520))
+                          .withValues(alpha: context.isDark ? 0.44 : 0.12),
+                  blurRadius: 26,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(children: slots),
+          ),
+        ),
+      );
+    }
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -329,6 +370,41 @@ class _ProfileSlot extends StatelessWidget {
             // screen reader would both find a button nobody can see.
             onTap: visible ? onTap : null,
             semanticLabel: context.l10n.accountTitle,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// The capture button, as a square inside the bar.
+///
+/// The other designs float a circle over the content. This one does not: a
+/// bar that already hovers cannot carry a second hovering thing without the
+/// two of them arguing about which is on top.
+class _SquareCapture extends StatelessWidget {
+  const _SquareCapture({required this.onPressed});
+
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: context.l10n.captureTitle,
+      child: Material(
+        color: context.colors.primary,
+        borderRadius: BorderRadius.circular(16),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onPressed,
+          child: SizedBox(
+            width: 48,
+            height: 48,
+            child: Icon(
+              Icons.add_rounded,
+              size: 24,
+              color: context.colors.onPrimary,
+            ),
           ),
         ),
       ),

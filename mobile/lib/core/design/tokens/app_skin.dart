@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'accent_choice.dart';
+
 /// A whole visual character, not just an accent colour.
 ///
 /// The four skins come from four design directions, and each one owns its own
@@ -18,7 +20,12 @@ enum AppSkin {
   cosy('cosy'),
 
   /// Deep navy-black and electric violet. Tighter corners, more contrast.
-  midnight('midnight');
+  midnight('midnight'),
+
+  /// Layered translucent surfaces on a tinted ground, wide corners, soft
+  /// shadows. The only skin whose accent the user picks; every other one
+  /// carries a hue that belongs to its own character.
+  suave('suave');
 
   const AppSkin(this.wire);
 
@@ -35,11 +42,19 @@ enum AppSkin {
   /// The brightness the skin was drawn in. Used only to preview it honestly
   /// in the picker; the user's mode setting still wins.
   Brightness get nativeBrightness => switch (this) {
-    AppSkin.soft || AppSkin.pastel => Brightness.light,
+    AppSkin.soft || AppSkin.pastel || AppSkin.suave => Brightness.light,
     AppSkin.cosy || AppSkin.midnight => Brightness.dark,
   };
 
+  /// Whether the accent is the user's to choose.
+  ///
+  /// True for exactly one skin. The other four were each drawn around their
+  /// own hue - the sage of cosy, the electric violet of midnight - and
+  /// swapping it would leave a design wearing somebody else's colour.
+  bool get accentIsChosen => this == AppSkin.suave;
+
   double get cardRadius => switch (this) {
+    AppSkin.suave => 24,
     AppSkin.pastel => 20,
     AppSkin.cosy => 18,
     AppSkin.soft => 16,
@@ -52,6 +67,7 @@ enum AppSkin {
 
   /// How strongly a category colour tints a surface behind it.
   double get tintStrength => switch (this) {
+    AppSkin.suave => 1.0,
     AppSkin.pastel => 1.35,
     AppSkin.cosy => 0.85,
     AppSkin.midnight => 1.1,
@@ -123,6 +139,25 @@ class SkinPalette {
   /// because a border should be findable, not loud.
   final Color borderStrong;
 
+  /// The same palette wearing a different accent.
+  ///
+  /// Only the three accent roles move; the surfaces and the text colours are
+  /// what make the skin recognisable and they stay exactly as drawn.
+  SkinPalette withAccent(AccentChoice choice, Brightness brightness) =>
+      SkinPalette(
+        accent: choice.fill(brightness),
+        accentText: choice.text(brightness),
+        accentSecondary: choice.wash(brightness),
+        surface: surface,
+        surfaceContainerLowest: surfaceContainerLowest,
+        surfaceContainer: surfaceContainer,
+        surfaceContainerHighest: surfaceContainerHighest,
+        onSurface: onSurface,
+        onSurfaceVariant: onSurfaceVariant,
+        border: border,
+        borderStrong: borderStrong,
+      );
+
   Gradient get gradient => LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
@@ -191,6 +226,22 @@ const Map<AppSkin, SkinPalette> _light = {
     border: Color(0x141A2340),
     borderStrong: Color(0x7F1A2340),
   ),
+  // Layered white over a tinted ground. The accent below is only the
+  // default: this is the one skin whose accent the user picks, and
+  // AppTheme swaps in their choice before the theme is built.
+  AppSkin.suave: SkinPalette(
+    accent: Color(0xFF2B5FE3),
+    accentText: Color(0xFF2B5FE3),
+    accentSecondary: Color(0xFF6B8AF0),
+    surface: Color(0xFFE7ECF6),
+    surfaceContainerLowest: Color(0xFFFFFFFF),
+    surfaceContainer: Color(0xFFFFFFFF),
+    surfaceContainerHighest: Color(0xFFEEF1F8),
+    onSurface: Color(0xFF111520),
+    onSurfaceVariant: Color(0xFF525A6B),
+    border: Color(0x14111520),
+    borderStrong: Color(0x77111520),
+  ),
 };
 
 const Map<AppSkin, SkinPalette> _dark = {
@@ -248,6 +299,24 @@ const Map<AppSkin, SkinPalette> _dark = {
     border: Color(0x1F9FB0E0),
     borderStrong: Color(0x839FB0E0),
   ),
+  // The same language after dark, and the reason this skin needed its own
+  // dark palette rather than an inversion: translucency stops working on a
+  // dark ground - white at 80% over black is dead grey - so the surfaces go
+  // solid and the depth comes from light instead. Each plane is a step
+  // lighter than the one behind it, with a hairline on top.
+  AppSkin.suave: SkinPalette(
+    accent: Color(0xFF3C6CE5),
+    accentText: Color(0xFF6D91EC),
+    accentSecondary: Color(0xFF8AA5F2),
+    surface: Color(0xFF0E1320),
+    surfaceContainerLowest: Color(0xFF161E2E),
+    surfaceContainer: Color(0xFF1A2336),
+    surfaceContainerHighest: Color(0xFF222C44),
+    onSurface: Color(0xFFEEF2FA),
+    onSurfaceVariant: Color(0xFF9AA5BD),
+    border: Color(0x1FFFFFFF),
+    borderStrong: Color(0x58FFFFFF),
+  ),
 };
 
 /// Where the capture button lives, and how many destinations flank it.
@@ -261,6 +330,11 @@ enum SkinNav {
   /// A circle sunk into the middle of the bar, two destinations either side.
   /// Inbox moves to the header bell, where its badge is still visible.
   centre,
+
+  /// A rounded bar that floats clear of the bottom edge on its own shadow,
+  /// with the capture button as a square inside it. No floating button over
+  /// the content at all.
+  floating,
 }
 
 /// What sits at the top of Home.
@@ -288,6 +362,11 @@ enum SkinSectionStyle {
 
   /// `A seguir`, and nothing else.
   plain,
+
+  /// `A seguir` and the number of rows in a small raised pill. The design
+  /// that draws no lines cannot end a heading with a bare figure floating in
+  /// the margin, so the figure gets a plane of its own like everything else.
+  pill,
 }
 
 /// What fills the first screen anyone sees.
@@ -303,6 +382,10 @@ enum SkinWelcome {
 
   /// A full-bleed dome of light and stars behind the mark.
   aurora,
+
+  /// Three cards rising off the page, one behind the other. The whole design
+  /// is about what sits above what, and this says so before a word is read.
+  planes,
 }
 
 /// The parts of the layout that change with the theme.
@@ -313,6 +396,7 @@ enum SkinWelcome {
 extension AppSkinLayout on AppSkin {
   SkinNav get nav => switch (this) {
     AppSkin.pastel => SkinNav.centre,
+    AppSkin.suave => SkinNav.floating,
     _ => SkinNav.docked,
   };
 
@@ -323,6 +407,7 @@ extension AppSkinLayout on AppSkin {
   };
 
   SkinSectionStyle get sectionStyle => switch (this) {
+    AppSkin.suave => SkinSectionStyle.pill,
     AppSkin.soft => SkinSectionStyle.linkAll,
     AppSkin.pastel => SkinSectionStyle.count,
     AppSkin.cosy => SkinSectionStyle.upperCount,
@@ -359,6 +444,7 @@ extension AppSkinLayout on AppSkin {
     AppSkin.pastel => SkinWelcome.bubbles,
     AppSkin.cosy => SkinWelcome.photo,
     AppSkin.midnight => SkinWelcome.aurora,
+    AppSkin.suave => SkinWelcome.planes,
   };
 
   /// Whether the welcome art fills the screen behind the type.

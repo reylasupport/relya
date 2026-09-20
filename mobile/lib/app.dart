@@ -37,8 +37,14 @@ class _RelyaAppState extends ConsumerState<RelyaApp> {
       title: Brand.appName,
       debugShowCheckedModeBanner: false,
       routerConfig: ref.watch(routerProvider),
-      theme: AppTheme.light(preferences.resolvedSkin),
-      darkTheme: AppTheme.dark(preferences.resolvedSkin),
+      theme: AppTheme.light(
+        preferences.resolvedSkin,
+        accent: preferences.themeAccent,
+      ),
+      darkTheme: AppTheme.dark(
+        preferences.resolvedSkin,
+        accent: preferences.themeAccent,
+      ),
       themeMode: preferences.themeMode,
       locale: SupportedLocales.fromTag(preferences.localeTag),
       supportedLocales: SupportedLocales.locales,

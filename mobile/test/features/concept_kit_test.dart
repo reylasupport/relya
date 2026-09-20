@@ -6,19 +6,21 @@ import 'package:relya/core/design/concept/kit_a.dart';
 import 'package:relya/core/design/concept/kit_d.dart';
 import 'package:relya/core/design/concept/kit_e.dart';
 import 'package:relya/core/design/concept/kit_f.dart';
+import 'package:relya/core/design/concept/kit_g.dart';
 import 'package:relya/core/design/theme/app_theme.dart';
 import 'package:relya/core/design/tokens/app_skin.dart';
 
-/// The whole point of the concept layer is that the four designs are four
+/// The whole point of the concept layer is that the five designs are five
 /// designs. These tests fail the moment someone collapses them back into one.
 void main() {
   test('every skin maps to its own concept', () {
     final concepts = AppSkin.values.map((s) => s.concept).toList();
-    expect(concepts.toSet().length, 4);
+    expect(concepts.toSet().length, 5);
     expect(AppSkin.midnight.concept, Concept.a);
     expect(AppSkin.soft.concept, Concept.d);
     expect(AppSkin.pastel.concept, Concept.e);
     expect(AppSkin.cosy.concept, Concept.f);
+    expect(AppSkin.suave.concept, Concept.g);
   });
 
   testWidgets('each concept resolves to its own kit', (tester) async {
@@ -39,13 +41,13 @@ void main() {
       await tester.pumpAndSettle();
       kits.add(kit.runtimeType);
     }
-    expect(kits, {KitA, KitD, KitE, KitF});
+    expect(kits, {KitA, KitD, KitE, KitF, KitG});
   });
 
   test('density is part of the design, not a constant', () {
-    const kits = [KitA(), KitD(), KitE(), KitF()];
+    const kits = [KitA(), KitD(), KitE(), KitF(), KitG()];
     final gutters = kits.map((k) => k.gutter).toSet();
-    // Not all four have to differ, but they must not all agree: the AI
+    // Not all of them have to differ, but they must not all agree: the AI
     // dashboard packs tighter than the pastel one on purpose.
     expect(gutters.length, greaterThan(1));
     expect(const KitA().gutter, lessThan(const KitE().gutter));

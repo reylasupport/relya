@@ -115,6 +115,7 @@ class _Welcome extends StatelessWidget {
     SkinWelcome.bubbles => const _WelcomePastel(),
     SkinWelcome.photo => const _WelcomeCosy(),
     SkinWelcome.aurora => const _WelcomeMidnight(),
+    SkinWelcome.planes => const _WelcomeSuave(),
   };
 }
 
@@ -146,6 +147,138 @@ class _WelcomeSoft extends StatelessWidget {
           const SizedBox(height: AppSpacing.xl),
           const _Features(),
         ],
+      ),
+    );
+  }
+}
+
+/// Soft depth opens on what it is: three cards, each one lifted further off
+/// the page than the last. Nothing here is outlined, and the order you read
+/// them in is the order of their shadows.
+class _WelcomeSuave extends StatelessWidget {
+  const _WelcomeSuave();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xl),
+      child: Column(
+        children: [
+          const _RisingPlanes(),
+          const SizedBox(height: AppSpacing.xl),
+          Text(
+            l10n.welcomeTitleSuave,
+            textAlign: TextAlign.center,
+            style: context.text.headlineMedium,
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            l10n.welcomeBodySuave,
+            textAlign: TextAlign.center,
+            style: context.text.bodyLarge?.copyWith(
+              color: context.colors.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.xl),
+          const _Features(compact: true),
+        ],
+      ),
+    );
+  }
+}
+
+/// The three cards. Decoration, and nothing a screen reader needs to read -
+/// the title underneath says the same thing in words.
+class _RisingPlanes extends StatelessWidget {
+  const _RisingPlanes();
+
+  @override
+  Widget build(BuildContext context) {
+    final dark = context.isDark;
+    final shadow = dark ? Colors.black : const Color(0xFF111520);
+
+    Widget plane({
+      required double width,
+      required double height,
+      required double lift,
+      required Color color,
+      Widget? child,
+    }) => Container(
+      width: width,
+      height: height,
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: shadow.withValues(alpha: (dark ? 0.40 : 0.10) * lift),
+            blurRadius: 14 * lift,
+            offset: Offset(0, 4 * lift),
+          ),
+        ],
+      ),
+      child: child,
+    );
+
+    Widget line(double width, {bool strong = false}) => Container(
+      width: width,
+      height: strong ? 9 : 7,
+      decoration: BoxDecoration(
+        color: strong
+            ? context.colors.primary
+            : context.colors.onSurfaceVariant.withValues(alpha: 0.34),
+        borderRadius: BorderRadius.circular(999),
+      ),
+    );
+
+    return ExcludeSemantics(
+      child: SizedBox(
+        height: 196,
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            Positioned(
+              top: 8,
+              child: plane(
+                width: 200,
+                height: 58,
+                lift: 0.6,
+                color: context.colors.surfaceContainerLowest,
+              ),
+            ),
+            Positioned(
+              top: 52,
+              child: plane(
+                width: 240,
+                height: 62,
+                lift: 1.2,
+                color: context.colors.surfaceContainer,
+                child: line(120),
+              ),
+            ),
+            Positioned(
+              top: 108,
+              child: plane(
+                width: 278,
+                height: 74,
+                lift: 2.2,
+                color: context.colors.surfaceContainerHighest,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    line(96, strong: true),
+                    const SizedBox(height: 10),
+                    line(172),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

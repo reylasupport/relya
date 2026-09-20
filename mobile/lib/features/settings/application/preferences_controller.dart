@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/design/tokens/accent_choice.dart';
 import '../../../core/design/tokens/app_skin.dart';
 import '../../../shared/data/providers.dart';
 import '../../../shared/domain/user_preferences.dart';
@@ -29,6 +30,9 @@ class PreferencesController extends StateNotifier<UserPreferences> {
 
   Future<void> setThemeSkin(AppSkin skin) =>
       _save(state.copyWith(themeSkin: skin));
+
+  Future<void> setThemeAccent(AccentChoice accent) =>
+      _save(state.copyWith(themeAccent: accent));
 
   /// Null follows the device language.
   Future<void> setLocale(String? tag) => _save(state.copyWith(localeTag: tag));

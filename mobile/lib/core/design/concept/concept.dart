@@ -23,7 +23,11 @@ enum Concept {
   e,
 
   /// Cozy lifestyle dark. Warm black, serif headings, photography.
-  f;
+  f,
+
+  /// Soft depth. Layered surfaces, wide corners, diffuse shadows, a floating
+  /// bar. Hierarchy comes from elevation rather than from rules or weight.
+  g;
 
   bool get isDarkByNature => this == Concept.a || this == Concept.f;
 
@@ -33,6 +37,7 @@ enum Concept {
     Concept.d => 'D',
     Concept.e => 'E',
     Concept.f => 'F',
+    Concept.g => 'G',
   };
 }
 
@@ -71,6 +76,7 @@ extension ConceptOfSkin on AppSkin {
     AppSkin.soft => Concept.d,
     AppSkin.pastel => Concept.e,
     AppSkin.cosy => Concept.f,
+    AppSkin.suave => Concept.g,
   };
 }
 

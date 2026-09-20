@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../concept/concept.dart';
+import '../tokens/accent_choice.dart';
 import '../tokens/app_radii.dart';
 import '../tokens/app_semantic_colors.dart';
 import '../tokens/app_skin.dart';
@@ -17,13 +18,27 @@ import '../tokens/app_typography.dart';
 abstract final class AppTheme {
   const AppTheme._();
 
-  static ThemeData light(AppSkin skin) => _build(Brightness.light, skin);
+  static ThemeData light(AppSkin skin, {AccentChoice? accent}) =>
+      _build(Brightness.light, skin, accent);
 
-  static ThemeData dark(AppSkin skin) => _build(Brightness.dark, skin);
+  static ThemeData dark(AppSkin skin, {AccentChoice? accent}) =>
+      _build(Brightness.dark, skin, accent);
 
-  static ThemeData _build(Brightness brightness, AppSkin skin) {
+  static ThemeData _build(
+    Brightness brightness,
+    AppSkin skin,
+    AccentChoice? accent,
+  ) {
     final isLight = brightness == Brightness.light;
-    final p = skin.palette(brightness);
+    // The chosen accent applies to the one skin that offers the choice, and
+    // is ignored everywhere else: the other four were drawn around their own
+    // hue, and swapping it leaves a design wearing somebody else's colour.
+    final chosen = skin.accentIsChosen
+        ? (accent ?? AccentChoice.fallback)
+        : null;
+    final p = chosen == null
+        ? skin.palette(brightness)
+        : skin.palette(brightness).withAccent(chosen, brightness);
     final style = AppSkinStyle.of(skin, brightness);
 
     final scheme =
@@ -32,7 +47,12 @@ abstract final class AppTheme {
           brightness: brightness,
         ).copyWith(
           primary: p.accent,
-          onPrimary: isLight ? Colors.white : const Color(0xFF10121A),
+          // Every chosen accent was solved to carry white in both modes, so
+          // the dark-mode near-black that the fixed palettes use would be the
+          // one thing on the screen below AA.
+          onPrimary:
+              chosen?.onFill ??
+              (isLight ? Colors.white : const Color(0xFF10121A)),
           secondary: p.accentSecondary,
           surface: p.surface,
           surfaceContainerLowest: p.surfaceContainerLowest,
@@ -129,11 +149,16 @@ abstract final class AppTheme {
             // skins. accentText is the same hue already proven against a white
             // surface, and contrast is symmetric, so it carries white type.
             Concept.e || Concept.f => isLight ? p.accentText : p.accent,
+            // The chosen accents are solid enough to fill in either mode, and
+            // a 14% wash of one is not: the accent as type on its own tint
+            // came out at 3.82:1.
+            Concept.g => p.accent,
             _ => p.accent.withValues(alpha: isLight ? 0.14 : 0.24),
           },
           selectedForegroundColor: switch (concept) {
             Concept.e ||
             Concept.f => isLight ? Colors.white : const Color(0xFF17140F),
+            Concept.g => chosen?.onFill ?? Colors.white,
             _ => p.accentText,
           },
           // Only the selected segment is filled, so this line is the whole of

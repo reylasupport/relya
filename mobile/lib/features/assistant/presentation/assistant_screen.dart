@@ -10,6 +10,7 @@ import '../../../shared/data/providers.dart';
 import '../../../shared/domain/assistant_message.dart';
 import 'views/assistant_intro.dart';
 import 'views/assistant_parts.dart';
+import 'views/assistant_sources.dart';
 
 /// Questions about the user own life, answered only from the user own data.
 class AssistantScreen extends ConsumerStatefulWidget {
@@ -130,9 +131,21 @@ class _AssistantScreenState extends ConsumerState<AssistantScreen> {
                           );
                         }
                         final message = _messages[index];
-                        return AssistantBubble(
-                          text: message.text,
-                          isUser: message.isUser,
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            AssistantBubble(
+                              text: message.text,
+                              isUser: message.isUser,
+                            ),
+                            // Only real answers carry sources. An error
+                            // bubble has none, and a question is not a claim
+                            // that needs backing up.
+                            if (!message.isUser &&
+                                !message.failed &&
+                                message.citedItemIds.isNotEmpty)
+                              AssistantSources(itemIds: message.citedItemIds),
+                          ],
                         );
                       },
                     ),

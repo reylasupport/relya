@@ -62,7 +62,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     // own inside the bar, and on the Assistant tab it would sit on top of the
     // composer's send button.
     final hideFab =
-        context.appSkin.nav == SkinNav.centre ||
+        context.appSkin.nav != SkinNav.docked ||
         navigationShell.currentIndex == _assistantTab;
 
     return Scaffold(

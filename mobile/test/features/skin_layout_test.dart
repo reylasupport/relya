@@ -8,9 +8,9 @@ import 'package:relya/navigation/shell_chrome.dart';
 /// A skin is a design, not a palette.
 ///
 /// These tests exist because the easy failure mode of a theme system is that
-/// every theme ends up being the same screen in a different colour. Each of
-/// the four came from a different concept, and the concepts disagree about
-/// where the capture button lives and what the top of Home is.
+/// every theme ends up being the same screen in a different colour. Each one
+/// came from a different concept, and the concepts disagree about where the
+/// capture button lives and what the top of Home is.
 void main() {
   group('a skin carries layout, not only colour', () {
     test('exactly one design sinks the capture button into the bar', () {
@@ -18,6 +18,13 @@ void main() {
           .where((s) => s.nav == SkinNav.centre)
           .toList();
       expect(centre, [AppSkin.pastel]);
+    });
+
+    test('exactly one design lifts the whole bar off the edge', () {
+      final floating = AppSkin.values
+          .where((s) => s.nav == SkinNav.floating)
+          .toList();
+      expect(floating, [AppSkin.suave]);
     });
 
     test('the three hero styles are all in use', () {
@@ -28,9 +35,9 @@ void main() {
       });
     });
 
-    test('all four open on a different first screen', () {
+    test('each design opens on a first screen of its own', () {
       final welcomes = AppSkin.values.map((s) => s.welcome).toList();
-      expect(welcomes.toSet().length, 4);
+      expect(welcomes.toSet().length, welcomes.length);
       // Two of them are pictures that fill the screen; two sit on the wash.
       expect(AppSkin.values.where((s) => s.welcomeIsFullBleed).toList(), [
         AppSkin.cosy,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/design/tokens/accent_choice.dart';
 import '../../core/design/tokens/app_skin.dart';
 
 /// What happens to the original file once we have understood it (spec 31).
@@ -28,6 +29,7 @@ class UserPreferences {
   const UserPreferences({
     this.themeMode = ThemeMode.system,
     this.themeSkin,
+    this.themeAccent = AccentChoice.azul,
     this.localeTag,
     this.notificationsEnabled = true,
     this.mutedCategories = const {},
@@ -44,6 +46,10 @@ class UserPreferences {
   /// Null follows the default skin, so a change of default moves every user
   /// who never picked one of their own.
   final AppSkin? themeSkin;
+
+  /// The accent, for the one skin that lets it be chosen. Stored for every
+  /// skin so switching away and back does not forget it.
+  final AccentChoice themeAccent;
 
   AppSkin get resolvedSkin => themeSkin ?? AppSkin.fallback;
 
@@ -74,6 +80,7 @@ class UserPreferences {
   UserPreferences copyWith({
     ThemeMode? themeMode,
     AppSkin? themeSkin,
+    AccentChoice? themeAccent,
     Object? localeTag = _unset,
     bool? notificationsEnabled,
     Set<String>? mutedCategories,
@@ -87,6 +94,7 @@ class UserPreferences {
     return UserPreferences(
       themeMode: themeMode ?? this.themeMode,
       themeSkin: themeSkin ?? this.themeSkin,
+      themeAccent: themeAccent ?? this.themeAccent,
       localeTag: localeTag == _unset ? this.localeTag : localeTag as String?,
       notificationsEnabled: notificationsEnabled ?? this.notificationsEnabled,
       mutedCategories: mutedCategories ?? this.mutedCategories,
@@ -121,6 +129,7 @@ class UserPreferences {
         'dark' => ThemeMode.dark,
         _ => ThemeMode.system,
       },
+      themeAccent: AccentChoice.fromWire(json['theme_accent'] as String?),
       themeSkin: json['theme_skin'] == null
           ? null
           : AppSkin.fromWire(json['theme_skin'] as String?),
@@ -144,6 +153,7 @@ class UserPreferences {
   Map<String, dynamic> toJson() => {
     'theme_mode': themeMode.name,
     'theme_skin': themeSkin?.wire,
+    'theme_accent': themeAccent.wire,
     'locale': localeTag,
     'notifications_enabled': notificationsEnabled,
     'muted_categories': mutedCategories.toList(),

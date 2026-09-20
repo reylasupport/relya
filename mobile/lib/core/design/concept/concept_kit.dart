@@ -7,6 +7,7 @@ import 'kit_a.dart';
 import 'kit_d.dart';
 import 'kit_e.dart';
 import 'kit_f.dart';
+import 'kit_g.dart';
 
 /// The vocabulary every screen speaks, implemented once per design.
 ///
@@ -27,6 +28,7 @@ abstract class ConceptKit {
     Concept.d => const KitD(),
     Concept.e => const KitE(),
     Concept.f => const KitF(),
+    Concept.g => const KitG(),
   };
 
   /// Whatever sits behind every screen in this design: glows, a wash, a

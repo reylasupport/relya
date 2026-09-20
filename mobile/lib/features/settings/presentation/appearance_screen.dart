@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/design/tokens/accent_choice.dart';
 import '../../../core/design/tokens/app_skin.dart';
 import '../../../core/design/tokens/app_spacing.dart';
 import '../../../core/extensions/context_extensions.dart';
@@ -58,6 +59,23 @@ class AppearanceScreen extends ConsumerWidget {
             onSelectionChanged: (selection) =>
                 controller.setThemeMode(selection.first),
           ),
+          if (prefs.resolvedSkin.accentIsChosen) ...[
+            const SizedBox(height: AppSpacing.xl),
+            _Label(l10n.appearanceAccent),
+            const SizedBox(height: AppSpacing.sm),
+            _AccentRow(
+              selected: prefs.themeAccent,
+              brightness: brightness,
+              onPick: controller.setThemeAccent,
+            ),
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              l10n.appearanceAccentHint,
+              style: context.text.bodySmall?.copyWith(
+                color: context.colors.onSurfaceVariant,
+              ),
+            ),
+          ],
           const SizedBox(height: AppSpacing.xl),
           _Label(l10n.appearanceSkin),
           const SizedBox(height: AppSpacing.md),
@@ -99,6 +117,7 @@ String skinTitle(BuildContext context, AppSkin skin) {
     AppSkin.pastel => l10n.skinPastel,
     AppSkin.cosy => l10n.skinCosy,
     AppSkin.midnight => l10n.skinMidnight,
+    AppSkin.suave => l10n.skinSuave,
   };
 }
 
@@ -109,5 +128,83 @@ String skinBody(BuildContext context, AppSkin skin) {
     AppSkin.pastel => l10n.skinPastelBody,
     AppSkin.cosy => l10n.skinCosyBody,
     AppSkin.midnight => l10n.skinMidnightBody,
+    AppSkin.suave => l10n.skinSuaveBody,
+  };
+}
+
+/// The six accents, as swatches.
+///
+/// The swatches carry radio semantics rather than being six bare circles: this
+/// is one choice out of a fixed set, so a screen reader should announce the
+/// colour's name and whether it is the selected one, instead of reading six
+/// unlabelled shapes.
+class _AccentRow extends StatelessWidget {
+  const _AccentRow({
+    required this.selected,
+    required this.brightness,
+    required this.onPick,
+  });
+
+  final AccentChoice selected;
+  final Brightness brightness;
+  final ValueChanged<AccentChoice> onPick;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        for (final accent in AccentChoice.values)
+          Expanded(
+            child: Semantics(
+              label: accentName(context, accent),
+              inMutuallyExclusiveGroup: true,
+              selected: accent == selected,
+              child: InkWell(
+                onTap: () => onPick(accent),
+                borderRadius: BorderRadius.circular(14),
+                child: SizedBox(
+                  height: 56,
+                  child: Center(
+                    child: Container(
+                      width: 38,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: accent.fill(brightness),
+                        shape: BoxShape.circle,
+                        border: accent == selected
+                            ? Border.all(
+                                color: context.colors.onSurface,
+                                width: 2.5,
+                              )
+                            : null,
+                      ),
+                      child: accent == selected
+                          ? Icon(
+                              Icons.check_rounded,
+                              size: 19,
+                              color: accent.onFill,
+                            )
+                          : null,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Accent names are translated for the same reason theme names are.
+String accentName(BuildContext context, AccentChoice accent) {
+  final l10n = context.l10n;
+  return switch (accent) {
+    AccentChoice.azul => l10n.accentAzul,
+    AccentChoice.verde => l10n.accentVerde,
+    AccentChoice.terracota => l10n.accentTerracota,
+    AccentChoice.ameixa => l10n.accentAmeixa,
+    AccentChoice.ardosia => l10n.accentArdosia,
+    AccentChoice.carmim => l10n.accentCarmim,
   };
 }

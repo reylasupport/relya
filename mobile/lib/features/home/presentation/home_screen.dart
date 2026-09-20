@@ -12,6 +12,7 @@ import 'views/home_a.dart';
 import 'views/home_d.dart';
 import 'views/home_e.dart';
 import 'views/home_f.dart';
+import 'views/home_g.dart';
 
 /// Answers "what is important in my life right now" and nothing else.
 ///
@@ -75,6 +76,11 @@ class HomeScreen extends ConsumerWidget {
                   pending: pending,
                 ),
                 Concept.f => HomeF(
+                  data: data,
+                  profile: profile,
+                  pending: pending,
+                ),
+                Concept.g => HomeG(
                   data: data,
                   profile: profile,
                   pending: pending,

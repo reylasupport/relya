@@ -45,7 +45,8 @@ class SectionHeader extends StatelessWidget {
     final showCount =
         count != null &&
         (style == SkinSectionStyle.count ||
-            style == SkinSectionStyle.upperCount);
+            style == SkinSectionStyle.upperCount ||
+            style == SkinSectionStyle.pill);
     final showLink = style == SkinSectionStyle.linkAll && onSeeAll != null;
 
     return Padding(
@@ -59,12 +60,28 @@ class SectionHeader extends StatelessWidget {
         children: [
           Expanded(child: label),
           if (showCount)
-            Text(
-              '$count',
-              style: text.labelMedium?.copyWith(
-                color: context.colors.onSurfaceVariant,
+            if (style == SkinSectionStyle.pill)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+                decoration: BoxDecoration(
+                  color: context.colors.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: Text(
+                  '$count',
+                  style: text.labelSmall?.copyWith(
+                    color: context.colors.onSurfaceVariant,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              )
+            else
+              Text(
+                '$count',
+                style: text.labelMedium?.copyWith(
+                  color: context.colors.onSurfaceVariant,
+                ),
               ),
-            ),
           if (showLink)
             _SeeAll(label: context.l10n.actionSeeAll, onTap: onSeeAll!),
           if (trailing != null) ...[

@@ -15,6 +15,7 @@ import 'views/outbox_banner.dart';
 import 'views/inbox_d.dart';
 import 'views/inbox_e.dart';
 import 'views/inbox_f.dart';
+import 'views/inbox_g.dart';
 
 /// Everything that has been sent in, and what state it is in.
 ///
@@ -68,6 +69,7 @@ class InboxScreen extends ConsumerWidget {
                 Concept.d => InboxD(items: items, counts: counts, empty: empty),
                 Concept.e => InboxE(items: items, counts: counts, empty: empty),
                 Concept.f => InboxF(items: items, counts: counts, empty: empty),
+                Concept.g => InboxG(items: items, counts: counts, empty: empty),
               };
               // "Nothing here" and "two things are waiting for a network" are
               // both true at once offline, so the banner sits above the view

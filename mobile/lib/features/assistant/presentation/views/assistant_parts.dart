@@ -85,6 +85,7 @@ class AssistantBubble extends StatelessWidget {
       Concept.d => 18.0,
       Concept.e => 22.0,
       Concept.f => 16.0,
+      Concept.g => 20.0,
     };
 
     final userFill = context.concept == Concept.e
@@ -108,9 +109,25 @@ class AssistantBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: isUser ? userFill : colors.surfaceContainer,
           borderRadius: BorderRadius.circular(radius),
-          border: isUser
+          // Soft depth draws nothing with a line: the answer is separated
+          // from the page by sitting above it, the same way every card and
+          // row in that design is.
+          border: isUser || context.concept == Concept.g
               ? null
               : Border.all(color: context.colors.outlineVariant),
+          boxShadow: context.concept == Concept.g && !isUser
+              ? [
+                  BoxShadow(
+                    color:
+                        (context.isDark
+                                ? Colors.black
+                                : const Color(0xFF111520))
+                            .withValues(alpha: context.isDark ? 0.34 : 0.07),
+                    blurRadius: 14,
+                    offset: const Offset(0, 4),
+                  ),
+                ]
+              : null,
         ),
         child: Text(
           text,
